@@ -184,7 +184,7 @@ for omega_i=1:length(omega)
       U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = squeeze(U(:,:,component,omega_i));
     else
       % use extrap due to an octave bug in interp when NaNs show up
-      U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = interp1(rv, squeeze(U(:,:,component,omega_i)), rho, 'extrap');
+      U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = interp1(rv, squeeze(U(:,:,component,omega_i)), rho, [], 'extrap');
       U_padded(rho>rv(end)) = 0;
     end
 
