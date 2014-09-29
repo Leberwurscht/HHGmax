@@ -49,7 +49,7 @@ To compile for 32-bit MATLAB, use these commands:
 .. code-block:: bat
 
     > set MATLAB=YOUR_MATLAB_PATH
-    > mingw32-c++ -shared -I"%MATLAB%/extern/include" DMATLAB_MEX_FILE ^
+    > mingw32-c++ -shared -I"%MATLAB%/extern/include" -DMATLAB_MEX_FILE ^
       -fopenmp -O3 -ansi -o lewenstein.mexw32 -Wl,--export-all-symbols lewenstein.cpp ^
       -L"%MATLAB%/bin/win32" -lmex -lmx -leng -lmat
 

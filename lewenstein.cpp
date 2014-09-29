@@ -5,10 +5,11 @@ This file provides the interface to Mablab.
 Alternatively you could use lewenstein.hpp directly from your own C++ code.
 
 Compilation for Ubuntu/Octave:
-  # apt-get install octave-headers build-essential
-  # CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile --mex lewenstein.cpp
+  # apt-get install liboctave-dev build-essential
+  # CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex lewenstein.cpp
 
-  note: -ffast-math will improve speed by 10% but might be unsafe
+  notes: * option -ffast-math will improve speed by 10% but might be unsafe
+         * for older systems, you may have to replace liboctave-dev by octave-headers
 
 Compilation for Windows/Matlab:
   Install MS Visual Studio Express
@@ -39,6 +40,9 @@ Arguments:
     epsilon_t - specifies the spread of the returning wave packet
     weights - weights for integration; useful for implementing soft windows.
               length of this array determines length of integration interval
+    ground_state_amplitude - time-dependent ground state amplitude, allows to
+                             account for ground state depletion. length of this
+                             array must be the same as t argument
     dipole_method (optional) - one of 'H' (default) or 'symmetric_interpolate'
 
     If 'H' is chosen:
@@ -69,7 +73,7 @@ mxArray *call_lewenstein(int N, double *t, double *Et, const mxArray *config) {
   mxArray *d = mxCreateDoubleMatrix(dim,N,mxREAL);
 
   int weights_length;
-  double ip, epsilon_t, *weights, *output;
+  double ip, epsilon_t, *weights, *at, *output;
   string dipole_method;
 
   mxArray *field;
@@ -85,6 +89,11 @@ mxArray *call_lewenstein(int N, double *t, double *Et, const mxArray *config) {
   else {
     epsilon_t = mxGetScalar(field);
   }
+
+  field = mxGetField(config, 0, "ground_state_amplitude");
+  if (!field || !mxIsDouble(field)) mexErrMsgTxt("config needs a ground_state_amplitude field of type double.");
+  at = mxGetPr(field);
+  if (N!=(int)mxGetNumberOfElements(field)) mexErrMsgTxt("ground_state_amplitude should have same number of elements as t axis");
 
   field = mxGetField(config, 0, "weights");
   if (!field || !mxIsDouble(field)) mexErrMsgTxt("config needs a weights field of type double.");
@@ -114,7 +123,7 @@ mxArray *call_lewenstein(int N, double *t, double *Et, const mxArray *config) {
     }
 
     dipole_elements_H<dim,double> dp(alpha);
-    lewenstein<dim,double>(N, t, Et, weights_length, weights, ip, epsilon_t, dp, output);
+    lewenstein<dim,double>(N, t, Et, weights_length, weights, at, ip, epsilon_t, dp, output);
   }
   else if (dipole_method=="symmetric_interpolate") {
     field = mxGetField(config, 0, "deltav");
@@ -129,7 +138,7 @@ mxArray *call_lewenstein(int N, double *t, double *Et, const mxArray *config) {
     if (!dipole_imag)  mexErrMsgTxt("config.dipole_elements must be complex.");
 
     dipole_elements_symmetric_interpolate<dim,double> dp(dipole_length, deltap, dipole_real, dipole_imag);
-    lewenstein<dim,double>(N, t, Et, weights_length, weights, ip, epsilon_t, dp, output);
+    lewenstein<dim,double>(N, t, Et, weights_length, weights, at, ip, epsilon_t, dp, output);
   }
   else {
     mexErrMsgTxt("Unknown dipole_method.");

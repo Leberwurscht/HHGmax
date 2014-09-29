@@ -85,7 +85,7 @@ class dipole_elements_symmetric_interpolate : public dipole_elements<dim,Type> {
 
 // calculates dipole response
 template <int dim, typename Type>
-int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *weights, Type Ip, Type epsilon_t, const dipole_elements<dim,Type> &dp, Type *output_data) {
+int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *weights, Type *at, Type Ip, Type epsilon_t, const dipole_elements<dim,Type> &dp, Type *output_data) {
   typedef complex<Type> cType;
   typedef vec<dim,Type> rvec;
   typedef vec<dim,cType> cvec;
@@ -130,7 +130,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
   Type Sst, dt;
   int inde;
 
-  #pragma omp parallel for private(inde, integral, last_integrand, pst, tau_i, argdstar, argdnorm, dstar, dnorm, Sst, c, integrand13, dt) shared(t, Et, At, Bt, Ct, i, pi, weights, weight_length, Ip, dp)
+  #pragma omp parallel for private(inde, integral, last_integrand, pst, tau_i, argdstar, argdnorm, dstar, dnorm, Sst, c, integrand13, dt) shared(t, Et, At, Bt, Ct, i, pi, weights, weight_length, at, Ip, dp)
   for (t_i=1; t_i<N; t_i++) {
     inde = weight_length;
     if (t_i<inde) inde = t_i+1;
@@ -156,7 +156,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
 
       // note: c*sqrt(c) is a lot faster than pow(c, 1.5) - yields 100% speed improvement
       integrand13 = dstar;
-      integrand13 *= (dnorm * Et[t_i-tau_i]) * c*sqrt(c) * cType( cos(Sst), -sin(Sst) ) * weights[tau_i]; // takes most of the time!
+      integrand13 *= (dnorm * Et[t_i-tau_i]) * c*sqrt(c) * cType( cos(Sst), -sin(Sst) ) * weights[tau_i] * at[t_i] * at[t_i-tau_i]; // takes most of the time!
 
       dt=0; if (tau_i>0) dt = t[tau_i]-t[tau_i-1];
       integral += (last_integrand + integrand13) * cType(dt/2.);

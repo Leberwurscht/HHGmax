@@ -41,6 +41,17 @@
 %       you can for example provide two files 'data_1.1.mat' and 'data_1.2.mat',
 %       containing driving_field(1:30,1,1:500) and driving_field(31:100,1,...
 %       1:500), respectively.
+%     config.ionization_rate (optional) -
+%       name of a NetCDF file containing variables `t`, `x`, `y`, `z` giving
+%       the axes and a variable `W` with dimensions z,y,x,t (order is C-style)
+%       containing the ionization rates; if not given, ionization rate is
+%       assumed to be zero
+%       Note: x,y,z must correspond to xv,yv,zv arguments, but t does not need
+%             to correspond to t_cmc axis, as interpolation is used
+%     config.ionization_rate_format (optional) -
+%       can be 'NetCDF' (default) or 'fallback' for the fallback format as
+%       used in @binary_file_fallback; use this for Octave installations
+%       without NetCDF support.
 %     config.ionization_potential - in eV
 %     config.tau_interval_length - how far to integrate back in time, in
 %                                  driving field periods
@@ -105,6 +116,11 @@ if isfield(config,'components')
   components = config.components;
 end
 
+% Octave has still flipdim instead of flip function, which is needed later
+if ~exist('flip')
+  flip = @flipdim;
+end
+
 % prepare driving field
 if isfield(config,'precomputed_driving_field')
   % verify axes
@@ -127,8 +143,8 @@ if isfield(config,'precomputed_driving_field')
   df_chunk = 0;
 
   % give a warning when using cache
-  if isfield(config,'cachedir')
-    warning('using precomputed driving field with cache - make sure to erase cache when you alter the driving field data!');
+  if isfield(config,'backend') && ~strcmpi(config.backend,'RAM')
+    warning('using precomputed driving field with hard drive cache - make sure to erase cache when you alter the driving field data!');
   end
 else
   % create handle for driving field function
@@ -226,8 +242,98 @@ t_window = cos(t_window_factor * (0:t_window_pts-1) ) .^ 2;
 data_size = [length(yv),length(xv),length(zv),components,keep_end-keep_start+1];
 response_cmc = complex(nan(data_size), nan(data_size));
 
+% parse symmetry option
+symmetry_x = 0;
+symmetry_y = 0;
+if isfield(config,'symmetry') && length(config.symmetry)
+  if strcmpi(config.symmetry,'x')
+    symmetry_x = 1;
+  elseif strcmpi(config.symmetry,'y')
+    symmetry_y = 1;
+  elseif strcmpi(config.symmetry,'xy')
+    symmetry_x = 1;
+    symmetry_y = 1;
+  elseif config.symmetry && ~strcmpi(config.symmetry,'rotational')
+    error('config.symmetry must be one of ''x'', ''y'' or ''xy'', ''rotational'' or a false value');
+  end
+end
+
+% make sure axes conform to symmetry options
+if symmetry_x && ( ~length(find(xv==0)) || ~all(abs(xv+fliplr(xv))<1e-10) )
+  error('x axis must be symmetric and contain 0 due to config.symmetry setting');
+end
+
+if symmetry_y && ( ~length(find(yv==0)) || ~all(abs(yv+fliplr(yv))<1e-10) )
+  error('y axis must be symmetric and contain 0 due to config.symmetry setting');
+end
+
 % initialize cache
-cache = cache_init(xv, yv, zv, components, omega, config);
+metadata = struct();
+metadata.omega = omega;
+metadata.xv = xv;
+metadata.yv = yv;
+metadata.config = config;
+metadata.symmetry_x = symmetry_x;
+metadata.symmetry_y = symmetry_y;
+
+if symmetry_x
+  cache_xn = (length(xv)-1)/2 + 1;
+else
+  cache_xn = length(xv);
+end
+
+if symmetry_y
+  cache_yn = (length(yv)-1)/2 + 1;
+else
+  cache_yn = length(yv);
+end
+
+d_cache = cache(cache_xn,cache_yn,zv,components,length(omega),config,metadata);
+d_cache.open();
+
+% parse ionization rate option
+if isfield(config,'ionization_rate')
+  if isfield(config,'periodic') && config.periodic
+    error('You cannot specify ionization rates for periodic mode.');
+  end
+
+  irate_structure = struct();
+  irate_structure.dimensions.t = nan; % will be read from file
+  irate_structure.dimensions.x = nan; % will be read from file
+  irate_structure.dimensions.y = nan; % will be read from file
+  irate_structure.dimensions.z = nan; % will be read from file
+  irate_structure.variables.t = {'t'};
+  irate_structure.variables.x = {'x'};
+  irate_structure.variables.y = {'y'};
+  irate_structure.variables.z = {'z'};
+  irate_structure.variables.W = {'t','x','y','z'};
+
+  if isfield(config,'ionization_rate_format') && strcmpi(config.ionization_rate_format,'fallback')
+    ionization_rate_file = binary_file_fallback(config.ionization_rate,irate_structure);
+  elseif isfield(config,'ionization_rate_format') && ~strcmpi(config.ionization_rate_format,'NetCDF')
+    error('ionization_rate_format option must be ''fallback'' or ''NetCDF''');
+  else
+    ionization_rate_file = binary_file_netcdf(config.ionization_rate,irate_structure);
+  end
+
+  % check x,y axes and load z and t axis
+  dims = ionization_rate_file.get_dimensions();
+  irate_xv = ionization_rate_file.read('x',[1], [dims.x])';
+  irate_yv = ionization_rate_file.read('y',[1], [dims.y])';
+  irate_zv = ionization_rate_file.read('z',[1], [dims.z])';
+  irate_t = ionization_rate_file.read('t',[1], [dims.t])';
+
+  if ~( max(abs(irate_xv(1:cache_xn)-xv(1:cache_xn)))<1e-9 )
+    error('inappropriate x axis in specified file with ionization rates');
+  end
+  if ~( max(abs(irate_yv(1:cache_yn)-yv(1:cache_yn)))<1e-9 )
+    error('inappropriate y axis in specified file with ionization rates');
+  end
+end
+
+if ~exist('ionization_rate_file','var')
+  lewenstein_config.ground_state_amplitude = ones(1,length(t_cmc));
+end
 
 % initialize progress struct
 if ~exist('progress', 'var')
@@ -244,11 +350,11 @@ end
 if ~isfield(progress, 'points_effective')
   progress.points_effective = progress.points_total;
 
-  if cache.symmetry_x
-    progress.points_effective = round(progress.points_effective / length(xv) * cache.points_x);
+  if symmetry_x
+    progress.points_effective = round(progress.points_effective / length(xv) * cache_xn);
   end
-  if cache.symmetry_y
-    progress.points_effective = round(progress.points_effective / length(yv) * cache.points_y);
+  if symmetry_y
+    progress.points_effective = round(progress.points_effective / length(yv) * cache_yn);
   end
 end
 
@@ -259,39 +365,18 @@ last_status = time_start;
 
 for zi=1:length(zv)
   % try to get from HD cache
-  from_cache = cache_get_slice(cache, zi, keep_start, keep_end);
+  from_cache = d_cache.get_slice(zi, keep_start, keep_end);
+
   if length(from_cache)
 %    response_cmc(:,:,zi,1:size(from_cache,4),:) = from_cache;
-    response_cmc(:,:,zi,:,:) = from_cache;
+    response_cmc(1:cache_yn,1:cache_xn,zi,:,:) = from_cache;
     progress.points_effective = progress.points_effective - round(size(from_cache,1)*size(from_cache,2) * progress.points_effective/progress.points_total);
     continue
   end
 
   % compute dipole response spectrum from driving field, applying the soft window
-  for xi=1:cache.points_x
-    for yi=1:cache.points_y
-%      % if driving field is symmetric, try to get already calculated value as optimization
-%      lookup = 0;
-%      lookup_xi = xi;
-%      lookup_yi = yi;
-%
-%      if symmetry_x && xi>(length(xv)+1)/2
-%        lookup_xi = length(xv)-xi + 1;
-%	lookup = 1;
-%      end
-%
-%      if symmetry_y && yi>(length(yv)+1)/2
-%        lookup_yi = length(yv)-yi + 1;
-%	lookup = 1;
-%      end
-%
-%      if lookup
-%%        response_cmc(yi,xi,zi,:,:) = response_cmc(lookup_yi,lookup_xi,zi,:,:);
-%size(cache_get(cache, zi, keep, lookup_yi, lookup_xi))
-%size(response_cmc)
-%        response_cmc(yi,xi,zi,:,:) = cache_get(cache, zi, keep, lookup_yi, lookup_xi);
-%        continue
-%      end
+  for xi=1:cache_xn
+    for yi=1:cache_yn
 
       % get driving field
       if exist('driving_field', 'var')
@@ -333,6 +418,17 @@ for zi=1:length(zv)
       % prepare driving field (for case of periodic mode)
       Et_cmc = repmat(Et_cmc, 1, repetitions);
 
+      % load ionization rates if specified
+      if exist('ionization_rate_file','var')
+        irate_zi = find(abs(zv(zi)-irate_zv)<1e-6, 1, 'first');
+        if ~length(irate_zi)
+          error(['Did not find z value ' num2str(zv(zi)) ' in file with ionization rates!']);
+        end
+        irate = ionization_rate_file.read('W',[1 xi yi irate_zi],[length(irate_t) 1 1 1]);
+        irate = interp1(irate_t,irate,t_cmc,'spline','extrap');
+        lewenstein_config.ground_state_amplitude = exp(-cumtrapz(t_cmc,irate));
+      end
+
       % compute dipole response
       d_t = lewenstein(t_cmc, Et_cmc, lewenstein_config);
       d_t = d_t(:,length(d_t)-fft_length+1:length(d_t));
@@ -358,13 +454,7 @@ for zi=1:length(zv)
       d_omega = d_omega .* repmat(exp(-i*omega*t0),components,1) * deltat;
 
       % save relevant part of spectrum
-      %   note: For performance reasons, cache_set_point is not a function but a script file.
-      %         For details, see cache_set_point.m.
-      %   expects the following variables:
-      %     cache xi yi zi d_omega
-      %   modifies the following variables:
-      %     cache
-      cache_set_point
+      d_cache.set_point(xi,yi,zi,d_omega);
 
       % status information
       progress.points_computed = progress.points_computed + 1;
@@ -405,11 +495,24 @@ for zi=1:length(zv)
 
   % mark slice as complete;
   % save or process data
-  cache_finish_slice(cache, zi);
+  d_cache.finish_slice(zi);
 
   % get the whole slice
-  response_cmc(:,:,zi,:,:) = cache_get_slice(cache, zi, keep_start, keep_end);
+  response_cmc(:,:,zi,:,:) = d_cache.get_slice(zi, keep_start, keep_end);
 end
+
+'flip'
+if symmetry_y
+  tic
+  response_cmc(cache.points_y+1:end,:,:,:,:) = flip(response_cmc(1:cache.points_y-1,:,:,:,:), 1);
+  toc
+end
+if symmetry_x
+  tic
+  response_cmc(:,cache.points_x+1:end,:,:,:) = flip(response_cmc(:,1:cache.points_x-1,:,:,:), 2);
+  toc
+end
+'flip done'
 
 progress.time_spent = etime(clock, time_start);
 
