@@ -1,7 +1,7 @@
 .. _resources:
 
-Dealing with RAM and CPU Restrictions
-=====================================
+Dealing with Memory and CPU Restrictions
+========================================
 
 .. highlight:: matlab
 
@@ -15,29 +15,72 @@ If you do not directly call the :ref:`dipole_response` module, but use the :ref:
 
   length(xv) * length(yv) * length(t_cmc)/2 * 8*2 / 1000 / 1000
 
-.. rubric:: Reduce RAM Usage
+.. rubric:: Use Cache
 
-If this is too much, you can instruct the program to only keep only a part of the computed spectrum and discard the rest. For this, you set the ``cache_omega_ranges`` option on the configuration ``struct()`` of the dipole reponse module, e.g.
+The computation of the dipole responses can take a long time. Sometimes, you only want to play with parameters affecting harmonic propagation or far field computation so it makes sense to reuse already computed dipole responses. To do this, an on-disk cache functionality is available which can be activated by setting a cache directory::
 
-::
+  config.cache.directory = 'cache/';
 
-  config.cache_omega_ranges = [14.9 15.1; 16.9 17.1; 18.9 19.1];
+If you set this, computed dipole spectra will be saved in the specified directory. If you call your program again, it will be checked if the parameters have changed, and if they haven't, the saved spectra will be used.
+
+..
+   The previous adjustment will only reduce RAM requirements. Another issue is the computation time. Often, it is necessary to only adapt some parameters e.g. for the :ref:`harmonic_propagation` module or the :ref:`farfield` module, but you do not want to recompute the already computed dipole spectra, as this is very time-consuming. To avoid this, you can use the built-in cache functionality of the :ref:`dipole_response` module, which can be activated by the ``cachedir`` configuration option, e.g.::
+
+.. rubric:: Control RAM Usage
+
+Often, the dipole responses consume a great amount of RAM which can lead to serious performance problems due to swapping or to out of memory errors. If you use the on-disk cache described above, computed dipole responses are saved to disk immediately and do not need to be kept in RAM. Then you can instruct the :ref:`dipole_response` module to only return a part of the full frequency spectrum to avoid loading large amounts of data in the RAM. To do this, add the return_omega argument to calls of :ref:`dipole_response` or :ref:`harmonic_propagation`, e.g. to get the spectrum from 13th to 19th harmonic::
+
+   return_omega = [13 19];
+
+   [omega, response_cmc] = dipole_response(t_cmc, xv, yv, zv, config, [], return_omega);
+   % or:
+   [z_max,omega,U] = harmonic_propagation(t_cmc, xv, yv, zv, dipole_response_config, config, return_omega);
+
+.. note::
+   When using the on-disk cache, a transpose operation has to be performed to reduce inperformant non-linear access to hard drives later. The amount of RAM used for this defaults to 1GB, but you can configure it using the config.cache.transpose_RAM option (value in GB). Smaller values slow down the operation.
+
+..
+  If this is too much, you can instruct the program to keep the dipole responses on a on-disk cache instead of in the RAM. 
+  only keep only a part of the computed spectrum and discard the rest. For this, you set the ``cache_omega_ranges`` option on the configuration ``struct()`` of the dipole reponse module, e.g.
+..
+  ::
+..
+    config.cache_omega_ranges = [14.9 15.1; 16.9 17.1; 18.9 19.1];
+..
+  which will only keep the part of the spectrum with
+..
+  .. math::
+..
+    (\omega/\omega_0) \;\in\; [14.9, 15.1] \cup [16.9, 17.1] \cup [18.9, 19.1],
+..
+  where :math:`\omega_0` is the driving field frequency. The ``omega`` return value of the :ref:`dipole_response` module or the :ref:`harmonic_propagation` module will be reduced accordingly.
+
+.. rubric:: Control Disk Space Usage
+
+If you are using the on-disk cache and the cache files get to large, you can also specify that only certain parts of the frequency spectrum should be saved. For this, you set the ``config.omega_ranges`` option on the configuration ``struct()`` of the dipole response module, e.g.::
+
+    config.omega_ranges = [14.9 15.1; 16.9 17.1; 18.9 19.1];
 
 which will only keep the part of the spectrum with
 
 .. math::
-
-  (\omega/\omega_0) \;\in\; [14.9, 15.1] \cup [16.9, 17.1] \cup [18.9, 19.1],
+    (\omega/\omega_0) \;\in\; [14.9, 15.1] \cup [16.9, 17.1] \cup [18.9, 19.1],
 
 where :math:`\omega_0` is the driving field frequency. The ``omega`` return value of the :ref:`dipole_response` module or the :ref:`harmonic_propagation` module will be reduced accordingly.
 
-.. rubric:: Use Cache
+.. note::
+   You can also apply this option to reduce RAM usage when on-disk cache is desactivated.
 
-The previous adjustment will only reduce RAM requirements. Another issue is the computation time. Often, it is necessary to only adapt some parameters e.g. for the :ref:`harmonic_propagation` module or the :ref:`farfield` module, but you do not want to recompute the already computed dipole spectra, as this is very time-consuming. To avoid this, you can use the built-in cache functionality of the :ref:`dipole_response` module, which can be activated by the ``cachedir`` configuration option, e.g.::
+.. rubric:: Use Network Storage
 
-  config.cachedir = 'cache';
+If you want to save the whole spectrum, it may be convenient to use high-capacity network storage. For this, simply set the ``config.cache.directory`` option to a network location.
 
-If you set this field on the configuration ``struct()`` for the :ref:`dipole_response` module, computed dipole spectra will be saved in the specified directory. If you call your program again, it will be checked if the parameters have changed, and if they haven't, the saved spectra will be used.
+However, it is a good idea to also provide an additional local cache directory for operations that need fast access. This directory will consume significantly less space, it can be specified like this::
+
+  config.cache.fast_directory = 'cache/';
+
+.. note::
+   You can also set the ``fast_directory`` option to a SSD and the ``directory`` option to a conventional hard drive to improve performance.
 
 .. rubric:: Exploit Symmetry
 
@@ -45,7 +88,7 @@ Another way to save computation time is applicable if you have a spatially symme
 
   config.symmetry = 'x';
 
-Currently, four values are allowed: ``''`` for no symmetry, ``'x'`` for mirror symmetry with respect to the :math:`x`-:math:`z` plane, ``'y'`` for mirror symmetry with respect to the :math:`y`-:math:`z` plane, and ``'xy'`` for symmetry with respect to both planes. This will reduce the computation time by approximately a factor of 2 or 4, respectively.
+Currently, five values are allowed: ``''`` for no symmetry, ``'x'`` for mirror symmetry with respect to the :math:`x`-:math:`z` plane, ``'y'`` for mirror symmetry with respect to the :math:`y`-:math:`z` plane, and ``'xy'`` for symmetry with respect to both planes. This will reduce the computation time by approximately a factor of 2 or 4, respectively. For rotational symmetry around the optical axis, use the value ``'rotational'``.
 
 .. rubric:: Disable discretization checks
 

@@ -13,4 +13,5 @@ Tutorial
    tutorial/far_field
    tutorial/resources
    tutorial/custom_df
+   tutorial/ground_state_depletion
    tutorial/compilation

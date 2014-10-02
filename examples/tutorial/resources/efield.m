@@ -36,19 +36,20 @@ config.tau_interval_length = 1; % driving field periods
 config.tau_window_length = 0.5; % driving field periods
 config.t_window_length = 5; % driving field periods
 
-% restrict frequency axis to save RAM
-config.cache_omega_ranges = [20.9 21.1];
+% restrict frequency axis to save disk space
+config.omega_ranges = [10 30];
 
 % use cache
-config.cachedir = 'cache';
+config.cache.directory = 'directory_on_network/';
+config.cache.fast_directory = 'local_directory/';
 
-% use symmetry
-config.symmetry = 'xy';
+% use symmetry to save computation time
+config.symmetry = 'rotational';
 
 % discretization of interaction volume
 xv = -0.010:0.0002:0.010; %   20um
 yv = -0.010:0.0002:0.010; % x 20um
-zv = -0.025:0.005:0.025;  % x 50um
+zv = -0.025:0.025:0.025;  % x 50um
 
 % configuration for harmonic_propagation module
  propagation_config = struct();
@@ -68,9 +69,12 @@ zv = -0.025:0.005:0.025;  % x 50um
  % disable checks to save computation time
  propagation_config.nochecks = 1;
 
+% only query a part of the spectrum to save RAM
+return_omega = [20.9 21.1];
+
 % call harmonic_propagation module which will use the dipole_response module
 % for calculating dipole spectra
-[z_max, omega, U] = harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config);
+[z_max, omega, U] = harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config, return_omega);
 
 % initialize and tell the far field module the wavelength
 ff_config = struct('wavelength', config.wavelength);

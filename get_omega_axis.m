@@ -7,16 +7,16 @@ temp(temp>length(temp)/2) = temp(temp>length(temp)/2) - length(temp);
 omega = temp * domega;
 
 
-if exist('config','var') && isfield(config, 'cache_omega_ranges')
+if exist('config','var') && isfield(config, 'omega_ranges')
   if isfield(config, 'raw') && config.raw
-    error('cache_omega_ranges option not possible in raw mode')
+    error('omega_ranges option not possible in raw mode')
   end
 
-  assert(size(config.cache_omega_ranges,2)==2);
+  assert(size(config.omega_ranges,2)==2);
   keep = [];
-  for r_i=1:size(config.cache_omega_ranges,1)
-    from = config.cache_omega_ranges(r_i,1);
-    to = config.cache_omega_ranges(r_i,2);
+  for r_i=1:size(config.omega_ranges,1)
+    from = config.omega_ranges(r_i,1);
+    to = config.omega_ranges(r_i,2);
     if to>max(omega)
       error(['Need finer t axis to be able to give data for omega range [' num2str([from to]) '].'])
     end

@@ -71,7 +71,8 @@ The parameters of the **model atom** used in the Lewenstein model:
   the electron excursion time with one infinite endpoint (see description of mathematic model). This integral
   is truncated using a soft window, and you need to specify the
   truncation position and window length.
-  To include both the short and long trajectories, values of :math:`1` and :math:`0.5` periods are recommended.
+  To include both the short and long trajectories, values of :math:`1` and :math:`0.5` periods are recommended,
+  for only short trajectory you can use :math:`0.66` and :math:`0.05`.
 
 .. todo::
    make better references to mathematical model in the last list item
