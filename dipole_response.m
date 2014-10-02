@@ -67,13 +67,13 @@
 %                                  be omitted
 %     config.symmetry (optional) - can be '', 'x', 'y' or 'xy' to indicate
 %                                  symmetry of the driving field respective to
-%                                  the given axes which will speed up the
+%                                  the given axes, or 'rotational' for
+%                                  rotational symmetry, which will speed up the
 %                                  computation
-%     config.cache_omega_ranges (optional) - can be used to keep cache files
-%                                            small when you are only interested
-%                                            in certain ranges of omega values;
-%                                            the format is [start1 end1; start2
-%                                            end2; ...].
+%     config.omega_ranges (optional) - can be used to keep cache files small
+%                                      when you are only interested in certain
+%                                      ranges of omega values; the format is
+%                                      [start1 end1; start2 end2; ...].
 %     config.raw (optional) - if 1, also the part of the spectrum for negative
 %                             omegas is returned, so that the time-dependent
 %                             dipole response can be easily reconstructed with
@@ -245,6 +245,7 @@ response_cmc = complex(nan(data_size), nan(data_size));
 % parse symmetry option
 symmetry_x = 0;
 symmetry_y = 0;
+symmetry_rotational = 0;
 if isfield(config,'symmetry') && length(config.symmetry)
   if strcmpi(config.symmetry,'x')
     symmetry_x = 1;
@@ -253,17 +254,21 @@ if isfield(config,'symmetry') && length(config.symmetry)
   elseif strcmpi(config.symmetry,'xy')
     symmetry_x = 1;
     symmetry_y = 1;
-  elseif config.symmetry && ~strcmpi(config.symmetry,'rotational')
+  elseif strcmpi(config.symmetry,'rotational')
+    symmetry_x = 1;
+    symmetry_y = 1;
+    symmetry_rotational = 1;
+  elseif config.symmetry
     error('config.symmetry must be one of ''x'', ''y'' or ''xy'', ''rotational'' or a false value');
   end
 end
 
 % make sure axes conform to symmetry options
-if symmetry_x && ( ~length(find(xv==0)) || ~all(abs(xv+fliplr(xv))<1e-10) )
+if symmetry_x && ( ~length(find(abs(xv)<1e-10)) || ~all(abs(xv+fliplr(xv))<1e-10) )
   error('x axis must be symmetric and contain 0 due to config.symmetry setting');
 end
 
-if symmetry_y && ( ~length(find(yv==0)) || ~all(abs(yv+fliplr(yv))<1e-10) )
+if symmetry_y && ( ~length(find(abs(yv)<1e-10)) || ~all(abs(yv+fliplr(yv))<1e-10) )
   error('y axis must be symmetric and contain 0 due to config.symmetry setting');
 end
 
@@ -275,6 +280,7 @@ metadata.yv = yv;
 metadata.config = config;
 metadata.symmetry_x = symmetry_x;
 metadata.symmetry_y = symmetry_y;
+metadata.symmetry_rotational = symmetry_rotational;
 
 if symmetry_x
   cache_xn = (length(xv)-1)/2 + 1;
@@ -287,8 +293,18 @@ if symmetry_y
 else
   cache_yn = length(yv);
 end
+cache_yi = 1:cache_yn;
 
-d_cache = cache(cache_xn,cache_yn,zv,components,length(omega),config,metadata);
+if symmetry_rotational
+  cache_yn = 1;
+  cache_yi = find(abs(yv)==min(abs(yv)), 1, 'first'); % find yv==0 but with tolerance
+end
+
+if ~isfield(config,'cache')
+  config.cache = struct();
+end
+
+d_cache = cache(cache_xn,cache_yn,zv,components,length(omega),config.cache,metadata);
 d_cache.open();
 
 % parse ionization rate option
@@ -336,7 +352,7 @@ if ~exist('ionization_rate_file','var')
 end
 
 % initialize progress struct
-if ~exist('progress', 'var')
+if ~exist('progress', 'var') || ~length(progress)
   progress = struct();
   progress.points_total = length(xv)*length(yv)*length(zv);
 end
@@ -369,14 +385,14 @@ for zi=1:length(zv)
 
   if length(from_cache)
 %    response_cmc(:,:,zi,1:size(from_cache,4),:) = from_cache;
-    response_cmc(1:cache_yn,1:cache_xn,zi,:,:) = from_cache;
+    response_cmc(cache_yi,1:cache_xn,zi,:,:) = from_cache;
     progress.points_effective = progress.points_effective - round(size(from_cache,1)*size(from_cache,2) * progress.points_effective/progress.points_total);
     continue
   end
 
   % compute dipole response spectrum from driving field, applying the soft window
   for xi=1:cache_xn
-    for yi=1:cache_yn
+    for yi=cache_yi
 
       % get driving field
       if exist('driving_field', 'var')
@@ -454,7 +470,7 @@ for zi=1:length(zv)
       d_omega = d_omega .* repmat(exp(-i*omega*t0),components,1) * deltat;
 
       % save relevant part of spectrum
-      d_cache.set_point(xi,yi,zi,d_omega);
+      d_cache.set_point(xi,yi-cache_yi(1)+1,zi,d_omega);
 
       % status information
       progress.points_computed = progress.points_computed + 1;
@@ -498,21 +514,43 @@ for zi=1:length(zv)
   d_cache.finish_slice(zi);
 
   % get the whole slice
-  response_cmc(:,:,zi,:,:) = d_cache.get_slice(zi, keep_start, keep_end);
+%  response_cmc(:,:,zi,:,:) = d_cache.get_slice(zi, keep_start, keep_end);
+  response_cmc(cache_yi,1:cache_xn,zi,:,:) = d_cache.get_slice(zi, keep_start, keep_end);
 end
 
-'flip'
-if symmetry_y
+d_cache.close();
+
+'extend data according to symmetry'
+if symmetry_rotational
+  % prepare interpolation - d(r) is given by dr and rv, query grid is rq
+  rv = flip(-xv(1:cache_xn), 2);
+  dr = reshape(response_cmc(cache_yi,1:cache_xn,:,:,:), [cache_xn length(zv) components keep_end-keep_start+1]);
+  dr = flip(dr, 1);
+  clear response_cmc;
+
+  [x_mesh y_mesh] = meshgrid(xv,yv);
+  rq = sqrt(x_mesh.^2 + y_mesh.^2);
+
+  % interpolate
+  for xi=1:length(xv)
+    response_cmc(:,xi,:,:,:) = interp1(rv, dr, rq(:,xi), [], 0);
+  end
+
+  % free some RAM
+  clear rv dr x_mesh y_mesh rq;
+end
+
+if symmetry_y && ~symmetry_rotational
   tic
-  response_cmc(cache.points_y+1:end,:,:,:,:) = flip(response_cmc(1:cache.points_y-1,:,:,:,:), 1);
+  response_cmc(cache_yn+1:end,:,:,:,:) = flip(response_cmc(1:cache_yn-1,:,:,:,:), 1);
   toc
 end
-if symmetry_x
+if symmetry_x && ~symmetry_rotational
   tic
-  response_cmc(:,cache.points_x+1:end,:,:,:) = flip(response_cmc(:,1:cache.points_x-1,:,:,:), 2);
+  response_cmc(:,cache_xn+1:end,:,:,:) = flip(response_cmc(:,1:cache_xn-1,:,:,:), 2);
   toc
 end
-'flip done'
+'extend data according to symmetry done'
 
 progress.time_spent = etime(clock, time_start);
 

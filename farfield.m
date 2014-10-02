@@ -30,9 +30,6 @@
 %                                  points in Fourier space; with nochecks=1,
 %                                  these checks can be disabled for better
 %                                  performance
-%     config.rotational_symmetry (optional) -
-%       if 1, rotational symmetry is assumed. yv must be [0] in this case and
-%       xv must start with 0 and only contain non-negative values
 %
 % Return values:
 %   E_plane - complex field amplitude in the output plane for each value of
@@ -73,32 +70,6 @@ if size(xv,2)~=length(xv)
 end
 if size(yv,2)~=length(yv)
   error('yv must be a row vector')
-end
-
-% check for rotational symmetry
-if isfield(config,'rotational_symmetry') && config.rotational_symmetry
-  if length(yv)~=1 || yv~=0
-    error('yv must be [0] if rotational_symmetry option is set.')
-  end
-  if any(xv<0)
-    error('All values of xv have to be positive if rotational_symmetry option is set.')
-  end
-  if xv(1)~=0
-    error('xv must start at 0 if rotational_symmetry option is set.')
-  end
-
-  % complete axes
-  rv = xv;
-  xv = [fliplr(-rv) rv(2:end)];
-  yv = xv;
-  [x_mesh y_mesh] = meshgrid(xv,yv);
-  rho = sqrt(x_mesh.^2 + y_mesh.^2);
-  clear x_mesh, y_mesh;
-
-  % set rotational symmetry variable
-  rotational_symmetry = 1;
-else
-  rotational_symmetry = 0;
 end
 
 % apply zero padding to xv and yv axes
@@ -180,13 +151,7 @@ for omega_i=1:length(omega)
 
     % apply zero padding to data
     U_padded = zeros([length(yv) length(xv)]);
-    if ~rotational_symmetry
-      U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = squeeze(U(:,:,component,omega_i));
-    else
-      % use extrap due to an octave bug in interp when NaNs show up
-      U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = interp1(rv, squeeze(U(:,:,component,omega_i)), rho, [], 'extrap');
-      U_padded(rho>rv(end)) = 0;
-    end
+    U_padded(y_i_start:y_i_end, x_i_start:x_i_end) = squeeze(U(:,:,component,omega_i));
 
     % calculate 2d Fourier transformation of harmonic field, with centered zero
     % value in both reciprocal and original space
