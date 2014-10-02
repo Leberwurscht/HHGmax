@@ -552,6 +552,6 @@ if symmetry_x && ~symmetry_rotational
 end
 'extend data according to symmetry done'
 
-progress.time_spent = etime(clock, time_start);
+progress.time_spent = progress.time_spent + etime(clock, time_start);
 
 omega = omega(keep_start:keep_end);
