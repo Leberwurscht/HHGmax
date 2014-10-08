@@ -40,7 +40,9 @@ function [Et_cmc] = gh_driving_field(x, y, z, config)
 % extract and check arguments
 omega = config.omega;
 pulse_coefficients = config.pulse_coefficients;
-assert(min(omega)<0 & max(omega)>0)
+if ~(min(omega)<0) || ~(max(omega)>0)
+  error('omega axis should go from -pi/N/dt to +pi/N/dt');
+end
 
 % compute k (for vacuum, in 1/mm) from omega (which is in multiples of driving
 % field angular frequency)

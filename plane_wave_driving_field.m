@@ -36,7 +36,9 @@ function [Et_cmc] = plane_wave_driving_field(x, y, z, config)
 % extract and check arguments
 omega = config.omega;
 pulse_coefficients = config.pulse_coefficients;
-assert(min(omega)<0 & max(omega)>0)
+if ~(min(omega)<0) || ~(max(omega)>0)
+  error('omega axis should go from -pi/N/dt to +pi/N/dt');
+end
 
 % compute electric field amplitude in SI units
 E0_SI = sqrt(2 * config.peak_intensity*1e4 / 299792458 / 8.854187817e-12);
