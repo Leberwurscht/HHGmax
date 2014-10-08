@@ -53,6 +53,8 @@ To compile for 32-bit MATLAB, use these commands:
       -fopenmp -O3 -ansi -o lewenstein.mexw32 -Wl,--export-all-symbols lewenstein.cpp ^
       -L"%MATLAB%/bin/win32" -lmex -lmx -leng -lmat
 
+In some cases, the 32-bit compiler is called ``i686-w64-mingw32-c++`` instead of ``mingw32-c++``.
+
 .. _TDM-GCC: http://tdm-gcc.tdragon.net/
 
 GNU Octave under Linux
