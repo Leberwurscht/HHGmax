@@ -11,6 +11,7 @@
 %	config.pulse_shape (optional) - one of 'constant' (default),
 %                                       'gaussian', 'super-gaussian', or
 %                                       'cos_sqr'
+%       config.carrier (optional) - can be 'cos' (default) or 'exp'
 %       config.ellipticity (optional) - if given, an elliptically polarized
 %                                      field is computed, and coefficients for
 %                                      both components are returned (amplitude
@@ -66,6 +67,15 @@ else
 	error('unknown pulse shape');
 end
 
+% parse carrier option
+if ~isfield(config, 'carrier') || strcmpi(config.carrier, 'cos')
+  carrier = @cos;
+elseif strcmpi(config.carrier, 'exp')
+  carrier = @(x) exp(1i*x);
+else
+  error('invalid carrier: must be ''cos'' or ''exp''');
+end
+
 % compute time-dependent amplitude
 if isfield(config,'ce_phase')
 	ce_phase = config.ce_phase;
@@ -73,12 +83,12 @@ else
 	ce_phase = 0;
 end
 
-amplitude(1,:) = envelope .* cos(t+ce_phase);
+amplitude(1,:) = envelope .* carrier(t+ce_phase);
 
 % add polarization
 if isfield(config,'ellipticity')
 	ellipticity = config.ellipticity;
-	amplitude(2,:) = (1-ellipticity) * envelope .* sin(t+ce_phase);
+	amplitude(2,:) = (1-ellipticity) * envelope .* carrier(t+ce_phase-pi/2);
 	amplitude = amplitude / sqrt( 1 + (1-ellipticity)^2 );
 end
 
