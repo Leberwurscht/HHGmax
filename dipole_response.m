@@ -41,17 +41,20 @@
 %       you can for example provide two files 'data_1.1.mat' and 'data_1.2.mat',
 %       containing driving_field(1:30,1,1:500) and driving_field(31:100,1,...
 %       1:500), respectively.
-%     config.ionization_rate (optional) -
-%       name of a NetCDF file containing variables `t`, `x`, `y`, `z` giving
-%       the axes and a variable `W` with dimensions z,y,x,t (order is C-style)
-%       containing the ionization rates; if not given, ionization rate is
-%       assumed to be zero
-%       Note: x,y,z must correspond to xv,yv,zv arguments, but t does not need
-%             to correspond to t_cmc axis, as interpolation is used
-%     config.ionization_rate_format (optional) -
-%       can be 'NetCDF' (default) or 'fallback' for the fallback format as
-%       used in @binary_file_fallback; use this for Octave installations
-%       without NetCDF support.
+%     config.ionization_fraction (optional) -
+%       name of a .m file (without the .m) containing a function
+%       ionization_fraction(t_cmc,Et,config) that computes the time-dependent
+%       ionization fraction from the driving field to be able to account for
+%       ground state depletion
+%       (note: not using function handle in order to maintain octave
+%       compatibility, which does not support isequal on function handles
+%       until 3.4)
+%     config.static_ionization_rate (optional) -
+%       instead of a callback function for the ionization fraction, you can
+%       specify the static ionization rate w(E) of the gas particle as an array
+%       to account for ground state depletion, in 1/s
+%     config.static_ionization_rate_field (optional) -
+%       E axis for static_ionization_rate option, in V/m
 %     config.ionization_potential - in eV
 %     config.tau_interval_length - how far to integrate back in time, in
 %                                  driving field periods
@@ -154,6 +157,9 @@ end
 % shift time axis to zero (required for lewenstein and window setup)
 t0 = t_cmc(1);
 t_cmc = t_cmc - t0;
+
+% needed to compute ground state amplitude
+dt = t_cmc(2)-t_cmc(1);
 
 % copy configuration
 lewenstein_config = config;
@@ -308,46 +314,20 @@ d_cache = cache(cache_xn,cache_yn,zv,components,length(omega),config.cache,metad
 d_cache.open();
 
 % parse ionization rate option
-if isfield(config,'ionization_rate')
+if isfield(config,'static_ionization_rate')
   if isfield(config,'periodic') && config.periodic
     error('You cannot specify ionization rates for periodic mode.');
   end
-
-  irate_structure = struct();
-  irate_structure.dimensions.t = nan; % will be read from file
-  irate_structure.dimensions.x = nan; % will be read from file
-  irate_structure.dimensions.y = nan; % will be read from file
-  irate_structure.dimensions.z = nan; % will be read from file
-  irate_structure.variables.t = {'t'};
-  irate_structure.variables.x = {'x'};
-  irate_structure.variables.y = {'y'};
-  irate_structure.variables.z = {'z'};
-  irate_structure.variables.W = {'t','x','y','z'};
-
-  if isfield(config,'ionization_rate_format') && strcmpi(config.ionization_rate_format,'fallback')
-    ionization_rate_file = binary_file_fallback(config.ionization_rate,irate_structure);
-  elseif isfield(config,'ionization_rate_format') && ~strcmpi(config.ionization_rate_format,'NetCDF')
-    error('ionization_rate_format option must be ''fallback'' or ''NetCDF''');
-  else
-    ionization_rate_file = binary_file_netcdf(config.ionization_rate,irate_structure);
+  if ~isfield(config,'static_ionization_rate_field')
+    error('You need to specify a E axis for your ionization rates using the static_ionization_rate_field config option.');
   end
 
-  % check x,y axes and load z and t axis
-  dims = ionization_rate_file.get_dimensions();
-  irate_xv = ionization_rate_file.read('x',[1], [dims.x])';
-  irate_yv = ionization_rate_file.read('y',[1], [dims.y])';
-  irate_zv = ionization_rate_file.read('z',[1], [dims.z])';
-  irate_t = ionization_rate_file.read('t',[1], [dims.t])';
-
-  if ~( max(abs(irate_xv(1:cache_xn)-xv(1:cache_xn)))<1e-9 )
-    error('inappropriate x axis in specified file with ionization rates');
-  end
-  if ~( max(abs(irate_yv(1:cache_yn)-yv(1:cache_yn)))<1e-9 )
-    error('inappropriate y axis in specified file with ionization rates');
-  end
-end
-
-if ~exist('ionization_rate_file','var')
+  irate = 1 / sau_convert(1/config.static_ionization_rate, 't', 'SAU', config);
+  irate_E = sau_convert(config.static_ionization_rate_field,'E','SAU',config);
+elseif isfield(config,'ionization_fraction')
+  ionization_fraction = str2func(config.ionization_fraction);
+else
+  % in this case prepare ground state amplitude already here for performance
   lewenstein_config.ground_state_amplitude = ones(1,length(t_cmc));
 end
 
@@ -434,15 +414,16 @@ for zi=1:length(zv)
       % prepare driving field (for case of periodic mode)
       Et_cmc = repmat(Et_cmc, 1, repetitions);
 
-      % load ionization rates if specified
-      if exist('ionization_rate_file','var')
-        irate_zi = find(abs(zv(zi)-irate_zv)<1e-6, 1, 'first');
-        if ~length(irate_zi)
-          error(['Did not find z value ' num2str(zv(zi)) ' in file with ionization rates!']);
-        end
-        irate = ionization_rate_file.read('W',[1 xi yi irate_zi],[length(irate_t) 1 1 1]);
-        irate = interp1(irate_t,irate,t_cmc,'spline','extrap');
-        lewenstein_config.ground_state_amplitude = exp(-cumtrapz(t_cmc,irate));
+      % compute time-dependent ground state amplitude if callback specified
+      if isfield(config,'ionization_fraction')
+        ifrac = ionization_fraction(t_cmc,Et_cmc,config);
+        lewenstein_config.ground_state_amplitude = sqrt(1 - ifrac);
+      end
+
+      % compute time-dependent ground state amplitude if static ionization rates specified
+      if isfield(config,'static_ionization_rate')
+        w = interp1(irate_E, irate, sum(abs(Et_cmc).^2,1));
+        lewenstein_config.ground_state_amplitude = sqrt(exp(-cumtrapz(t_cmc,w)) * dt); % integration
       end
 
       % compute dipole response
