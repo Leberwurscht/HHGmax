@@ -40,12 +40,15 @@ for config={config1, config2, config3}; config=config{1};
   subplot(3,3,subplot_nr); subplot_nr = subplot_nr+1;
   imagesc(xv,yv,abs(field_0).^2);
   title('z=0');
+  axis off;
 
   subplot(3,3,subplot_nr); subplot_nr = subplot_nr+1;
   imagesc(xv,yv,abs(field_z_R).^2);
   title('z=z_R');
+  axis off;
 
   subplot(3,3,subplot_nr); subplot_nr = subplot_nr+1;
   imagesc(100*xv,100*yv,abs(field_far).^2);
   title('far field');
+  axis off;
 end

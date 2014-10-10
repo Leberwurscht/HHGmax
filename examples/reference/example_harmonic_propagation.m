@@ -41,7 +41,7 @@ config.tau_window_length = 0.5;
 config.periodic = 1;
 
 % we are only want to plot harmonic 21
-config.cache_omega_ranges = [21-0.1 21+0.1];
+config.omega_ranges = [21-0.1 21+0.1];
 
 % set cache directory
 config.cachedir = 'example_harmonic_propagation_cache';

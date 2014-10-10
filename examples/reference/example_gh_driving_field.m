@@ -33,4 +33,4 @@ Et_cmc_1mm = gh_driving_field(0, 0, 1, config);
 plot(t, real(Et_cmc_0mm), t, real(Et_cmc_1mm))
 legend('driving field at z=0mm','driving field at z=1mm')
 xlabel('time in co-moving coordinates [scaled atomic units]')
-ylabel('real part of driving field [s.a.u.]')
+ylabel('driving field amplitude [s.a.u.]')

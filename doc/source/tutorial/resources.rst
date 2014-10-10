@@ -75,7 +75,7 @@ where :math:`\omega_0` is the driving field frequency. The ``omega`` return valu
 
 If you want to save the whole spectrum, it may be convenient to use high-capacity network storage. For this, simply set the ``config.cache.directory`` option to a network location.
 
-However, it is a good idea to also provide an additional local cache directory for operations that need fast access. This directory will consume significantly less space, it can be specified like this::
+However, it is a good idea to also provide an additional local cache directory for operations that need fast access. This directory will consume significantly less space (only two z slices at a time), it can be specified like this::
 
   config.cache.fast_directory = 'cache/';
 
@@ -109,9 +109,9 @@ Example
 
 We use the example from the :ref:`far_field` chapter, but this time we use pulses instead of a :math:`\cos` driving field. We apply all of the possible optimizations.
 
-In this example, without the ``cache_omega_ranges`` option, you would need approximately 650 MB of RAM. By setting it to ``[20.9, 21.1]``, the RAM requirements are reduced to approximately 1.3 MB (plus temporary variables and overhead). Here we use :math:`30\;\mathrm{fs}` pulses; if you have e.g. :math:`180\;\mathrm{fs}` pulses, you need six times as much RAM, i.e. 3.9 GB, without applying the optimization.
+In this example, without the ``omega_ranges`` option, each cache file would need approximately 650 MB of RAM. By setting it to ``[10 30]``, it is only 1.3 MB. Here we use :math:`30\;\mathrm{fs}` pulses; if you have e.g. :math:`180\;\mathrm{fs}` pulses, you need six times as much space per slice, i.e. 3.9 GB, without applying the optimization.
 
-The computation time is around 4 hours on a 2.5 GHz dual core processor.
+By using the rotational symmetry option, the memory requirements are reduced further, and computation time is reduced significantly.
 
 .. literalinclude:: ../../../examples/tutorial/resources/efield.m
    :language: matlab
@@ -119,4 +119,4 @@ The computation time is around 4 hours on a 2.5 GHz dual core processor.
 
 .. rubric:: Now, you know...
 
-... how to improve computation speed and how to do calculations without running into RAM problems.
+... how to improve computation speed and how to do calculations without running into RAM or disk space problems.

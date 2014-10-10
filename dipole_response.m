@@ -81,7 +81,7 @@
 %                             omegas is returned, so that the time-dependent
 %                             dipole response can be easily reconstructed with
 %                             an inverse fft
-%     config.cachedir (optional) - a directory that should be used as cache for
+%     config.cache (optional) - a directory that should be used as cache for
 %                                  already computed dipole responses (if it
 %                                  doesn't exist, it will be created)
 %     any config fields required by config.driving_field
