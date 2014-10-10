@@ -27,6 +27,8 @@ import sys, os
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.todo', 'sphinx.ext.pngmath']
 
+pngmath_latex_preamble = r'\usepackage[squaren]{SIunits} \newcommand{\vect}[1]{\boldsymbol{#1}}'
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -179,7 +181,7 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+  'preamble': r'\usepackage[squaren]{SIunits} \newcommand{\vect}[1]{\boldsymbol{#1}}',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
