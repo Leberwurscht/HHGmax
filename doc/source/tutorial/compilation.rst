@@ -6,15 +6,14 @@ Compilation
 MATLAB under Windows
 --------------------
 
-If you use MATLAB under Windows, it should be sufficient to copy the program directory to your disk. In order for the C++ implementation of the Lewenstein model to run, you may need the DLL file vcomp90.dll.
-For the case that your system does not provide this file, the program directory contains a 32-bit and a 64-bit version of it (``vcomp90_x86-32.dll`` and ``vcomp90_x64-64.dll``) that you can rename to ``vcomp90.dll``.
-Alternatively, you can obtain this file from the Microsoft Visual C++ Redistributable Package.
-
-The program comes with precompiled 32-bit and 64-bit executables for the C++
+If you use MATLAB under Windows, it should be sufficient to copy the program directory to your disk. The program comes with precompiled 32-bit and 64-bit executables for the C++
 implementation of the Lewenstein model, so usually you don't need to compile anything.
-If you make changes to the C++ part of the code, however, you will need to
+
+The C++ implementation of the Lewenstein model may need some additional DLL files to run, they come in the ``dll32`` and ``dll64`` directories and are copied automatically to the main program folder when the :ref:`dipole_response` module is called.
+
+If you make changes to the C++ part of the code, you will need to
 recompile. This works from within MATLAB, but you will need Microsoft Visual
-Studio C++ installed unfortunately, the free Express version of the compiler does
+Studio C++ installed unfortunately; the free Express version of the compiler does
 not produce multi-processor capable executables.
 To compile the Lewenstein implementation, open MATLAB, change your working directory to the program directory,
 and run
@@ -53,7 +52,7 @@ To compile for 32-bit MATLAB, use these commands:
       -fopenmp -O3 -ansi -o lewenstein.mexw32 -Wl,--export-all-symbols lewenstein.cpp ^
       -L"%MATLAB%/bin/win32" -lmex -lmx -leng -lmat
 
-In some cases, the 32-bit compiler is called ``i686-w64-mingw32-c++`` instead of ``mingw32-c++``.
+In some cases, the 32-bit compiler is called ``i686-w64-mingw32-c++`` instead of ``mingw32-c++``. You can also use the MinGW cross compiler to compile Windows binaries from Linux, for this use the same commands.
 
 .. _TDM-GCC: http://tdm-gcc.tdragon.net/
 
