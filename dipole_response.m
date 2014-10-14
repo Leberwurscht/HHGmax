@@ -113,6 +113,33 @@ function [omega, response_cmc, progress] = dipole_response(t_cmc, xv, yv, zv,...
                                                            config, progress,...
                                                            return_omega)
 
+% if using Windows, make accessible DLL files
+if ispc()
+  [rootpath,_,_] = fileparts(mfilename('fullpath'));
+  bits = computer('arch'); bits = bits(end-1:end); % 32 or 64
+
+  % use file sizes to find out if we already have DLL files for correct architecture
+  if ~exist(fullfile(rootpath,'vcomp90.dll'), 'file')
+    current_size = 0;
+  else
+    fileinfo = dir(fullfile(rootpath,'vcomp90.dll'));
+    current_size = fileinfo.bytes;
+  end
+
+  % get the size of the correct vcomp90 DLL file
+  fileinfo = dir(fullfile(rootpath, ['dll' bits], 'vcomp90.dll'));
+  if ~length(fileinfo)
+    error('Missing DLL directory.');
+  end
+  correct_size = fileinfo.bytes;
+
+  % copy files if necessary
+  if current_size~=correct_size
+    'Copying necessary DLL files'
+    copyfile(fullfile(rootpath,['dll' bits], '*'), rootpath);
+  end
+end
+
 % parse components option
 components = 1;
 if isfield(config,'components')
