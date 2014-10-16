@@ -115,7 +115,7 @@ function [omega, response_cmc, progress] = dipole_response(t_cmc, xv, yv, zv,...
 
 % if using Windows, make accessible DLL files
 if ispc()
-  [rootpath,_,_] = fileparts(mfilename('fullpath'));
+  [rootpath] = fileparts(mfilename('fullpath'));
   bits = computer('arch'); bits = bits(end-1:end); % 32 or 64
 
   % use file sizes to find out if we already have DLL files for correct architecture
