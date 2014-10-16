@@ -52,10 +52,11 @@ Return value:
 using namespace std;
 #include <string>
 
-// next 3 lines needed for VC++, otherwise <complex> can't be included
+// next 3 lines needed for some versions of VC++, otherwise <complex> can't be included
 #ifdef _CHAR16T
-#define CHAR16_T
+  #define __STDC_UTF_16__
 #endif
+
 #include <mex.h>
 
 template <int dim>
