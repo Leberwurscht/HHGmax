@@ -1,4 +1,3 @@
-// TODO: documentation (esp.: alpha in units of ip!)
 /*
 
 This file provides the interface to Mablab.
@@ -12,24 +11,15 @@ Compilation for Ubuntu/Octave:
          * for older systems, you may have to replace liboctave-dev by octave-headers
 
 Compilation for Windows/Matlab:
-  Install MS Visual Studio Express
-  Install Windows SDK to get vcomp.lib (openmp support)
-    (it might be necessary to copy vcomp.lib to C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\lib\amd64)
-
   From within Matlab:
     > mex lewenstein.cpp COMPFLAGS="/openmp $COMPFLAGS"
 
-  Links:
-    http://stackoverflow.com/questions/8031698/why-is-openmp-in-a-mex-file-only-producing-1-thread
-    http://www.walkingrandomly.com/?p=1795
-    http://kenny-tm.xanga.com/651048063/parallel-programming-using-openmp-with-visual-c-2008-express/
-    www.microsoft.com/downloads/details.aspx?FamilyId=E6E1C3DF-A74F-4207-8586-711EBE331CDC&displaylang=en
+  For installing the compiler, see the compilation chapter of the tutorial.
 
 Running under Windows/Matlab after compilation:
   vcomp90.dll is needed for openmp. The file is included in the Microsoft Visual C++ Redistributable Package,
   and must be placed in the same directory with the mex file.
-  This directory already includes vcomp90_x86-32.dll and vcomp90_x86-64.dll, rename the appropriate
-  one to vcomp90.dll depending on whether you have a 32-bit or 64-bit machine.
+  The dll32 and dll64 directories should include a copy of this file.
 
 Arguments:
   t - time axis in scaled atomic units; must be equally spaced and start at 0
