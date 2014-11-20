@@ -41,7 +41,7 @@ response000 = squeeze(response(1,1,1,1,:));
 
 % plot driving pulse
 subplot(2,1,1);
-t_fs = t_cmc/(2*pi) * (config.wavelength*1e-3/299792458) / 1e-15;
+t_fs = sau_convert(t_cmc, 't', 'SI', config)/1e-15;
 plot(t_fs, real(ifft(conj(pulse_coefficients))));
 title('driving pulse');
 xlabel('time [fs]');

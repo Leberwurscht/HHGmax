@@ -5,9 +5,6 @@ addpath('../../../');
 % initialize config struct
 config = struct();
 
-% use periodic driving field mode
-config.periodic = 1;
-
 % specify time axis
 % - we will be able to resolve harmonics up to the 100th,
 %   as we have 200=1/0.005 points per driving field period
