@@ -11,4 +11,5 @@ Reference Manual
    reference/harmonic_propagation
    reference/farfield.rst
    reference/sau_convert.rst
+   reference/tong_lin_ionization_rate.rst
    reference/lewenstein.rst

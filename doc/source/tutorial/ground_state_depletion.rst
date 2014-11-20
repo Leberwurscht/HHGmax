@@ -9,6 +9,25 @@ The implemented version of the Lewenstein model is extended to account for groun
 
 .. highlight:: matlab
 
+Static ionization rates
+-----------------------
+
+The :ref:`dipole_response` module can also compute the time-dependent ionization by itself under the quasi-static approximation if you provide the static ionization rates, which
+can be obtained e.g. from the included module :ref:`tong_lin_ionization_rate`. For this, use the ``static_ionization_rate`` option on the ``config`` struct of the :ref:`dipole_response` call, together with an intensity axis provided by the ``static_ionization_rate_field``
+option::
+
+   ...
+
+   field = 0:5e12:1e15; % V/m
+   rate = tong_lin_ionization_rate(field, struct('atom','Xe')); % in 1/s
+
+   config.static_ionization_rate = rate;
+   config.static_ionization_rate_field = field;
+
+   ...
+
+   [omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+
 Provide a callback function
 ---------------------------
 
@@ -36,25 +55,6 @@ Then, create a function called ``my_callback_file.m`` which looks like this::
 
    % set return value
    ionization_fraction = eta;
-
-Static ionization rates
------------------------
-
-The :ref:`dipole_response` module can also compute the time-dependent ionization by itself under the quasi-static approximation if you provide the static ionization rates. To do so,
-use the ``static_ionization_rate`` option on the ``config`` struct of the :ref:`dipole_response` call, together with an intensity axis provided by the ``static_ionization_rate_field``
-option::
-
-   ...
-
-   field = [0 1e10 2e10 3e10]; % V/m
-   rate = [0 0.2 0.5 1]; % 1/s
-
-   config.static_ionization_rate = rate;
-   config.static_ionization_rate_field = field;
-
-   ...
-
-   [omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
 
 .. rubric:: Now, you know...
 
