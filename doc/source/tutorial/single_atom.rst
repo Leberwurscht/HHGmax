@@ -50,7 +50,7 @@ Whether **periodicity** of the driving field should be assumed:
   must be a periodically continuable discretization of the :math:`[0, 2\pi)`
   interval.
 
-The spacial shape and time evolution of the **driving field**:
+The spatial shape and time evolution of the **driving field**:
   There are two ways of specifying the driving field -- either you can provide
   a callback function or you can provide a directory which contains ``.mat`` files
   with a certain format. The latter method will be covered in chapter :ref:`custom_df`,

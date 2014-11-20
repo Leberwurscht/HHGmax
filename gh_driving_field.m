@@ -16,7 +16,8 @@
 %
 % Return values:
 %   Et_cmc - complex driving field E(t_cmc) in comoving coordinates and scaled
-%            atomic units
+%            atomic units; first index gives electric field vector component
+%            and second corresponds to time axis
 %
 % Example:
 %   > config = struct();

@@ -157,6 +157,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
       // note: c*sqrt(c) is a lot faster than pow(c, 1.5) - yields 100% speed improvement
       integrand13 = dstar;
       integrand13 *= (dnorm * Et[t_i-tau_i]) * c*sqrt(c) * cType( cos(Sst), -sin(Sst) ) * weights[tau_i] * at[t_i] * at[t_i-tau_i]; // takes most of the time!
+        // for the a(t) & a(t-tau) terms, compare Cao et al. (2006) in Phys. Rev. A
 
       dt=0; if (tau_i>0) dt = t[tau_i]-t[tau_i-1];
       integral += (last_integrand + integrand13) * cType(dt/2.);

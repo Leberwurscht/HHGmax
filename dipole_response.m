@@ -81,10 +81,23 @@
 %                             omegas is returned, so that the time-dependent
 %                             dipole response can be easily reconstructed with
 %                             an inverse fft
-%     config.cache (optional) - a directory that should be used as cache for
-%                                  already computed dipole responses (if it
-%                                  doesn't exist, it will be created)
-%     any config fields required by config.driving_field
+%     config.cache (optional) - a struct that controls the cache. Important values are:
+%       config.cache.directory - if set, calculated spectra are saved to disk at the
+%                                specified directory.
+%       config.cache.fast_directory -
+%         if set, this directory is used for operations that need good hard drive
+%         performance. You can specify a directory on an SSD or on a local hard drive
+%         if config.cache.directory points to a network drive.
+%       config.cache.backend - can be set to 'NetCDF' (default) or 'fallback' which is
+%                              a method to get an on-disk cache for installations of
+%                              Octave without NetCDF support.
+%       config.cache.transpose_RAM (optional, default: 1GB) -
+%         can be used to control the RAM consumption of a transpose operation necessary
+%         to avoid non-linear disk access. If you use larger values, the operation will
+%         be faster.
+%   config.components (optional) - if using non-linear polarization, this must be set
+%                                  to the number of electric field vector components
+%   any config fields required by config.driving_field
 %     dipole-matrix-element-specific config fields required by lewenstein.cpp
 %   progress (optional) - a struct() that contains information about the
 %                         progress of the calculation, as returned as third
@@ -113,7 +126,7 @@ function [omega, response_cmc, progress] = dipole_response(t_cmc, xv, yv, zv,...
                                                            config, progress,...
                                                            return_omega)
 
-% if using Windows, make accessible DLL files
+% if using Windows, make accessible DLL files needed for lewenstein module
 if ispc()
   [rootpath] = fileparts(mfilename('fullpath'));
   bits = computer('arch'); bits = bits(end-1:end); % 32 or 64

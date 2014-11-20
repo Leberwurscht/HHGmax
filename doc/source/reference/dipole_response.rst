@@ -160,6 +160,9 @@ The arguments of the ``dipole_response`` function are:
           of a transpose operation necessary to avoid non-linear disk access. If you use larger
           values, the operation will be faster.
 
+       -  config.components (optional) must be set to the number of electric field vector components
+          if you use elliptical polarized driving fields (default: 1)
+
    -  This module calls ``lewenstein.cpp``. You can override the
       lower-lewel config values ``epsilon_t`` and
       ``dipole_method`` (see :ref:`lewenstein`).
