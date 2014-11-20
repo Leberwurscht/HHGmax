@@ -362,7 +362,7 @@ if isfield(config,'static_ionization_rate')
     error('You need to specify a E axis for your ionization rates using the static_ionization_rate_field config option.');
   end
 
-  irate = 1 / sau_convert(1/config.static_ionization_rate, 't', 'SAU', config);
+  irate = 1 ./ sau_convert(1./config.static_ionization_rate, 't', 'SAU', config);
   irate_E = sau_convert(config.static_ionization_rate_field,'E','SAU',config);
 elseif isfield(config,'ionization_fraction')
   ionization_fraction = str2func(config.ionization_fraction);
@@ -462,8 +462,17 @@ for zi=1:length(zv)
 
       % compute time-dependent ground state amplitude if static ionization rates specified
       if isfield(config,'static_ionization_rate')
-        w = interp1(irate_E, irate, sum(abs(Et_cmc).^2,1));
-        lewenstein_config.ground_state_amplitude = sqrt(exp(-cumtrapz(t_cmc,w)) * dt); % integration
+        Eabs = sqrt(sum(real(Et_cmc).^2,1)); % |\vec E_cmc|
+        w = interp1(irate_E, irate, Eabs);
+
+        % To compute ground state amplitude |a(t)|, use
+        %   P(Ionization) = 1 - |a(t)|^2 => |a(t)| = sqrt(1 - P(Ionization))
+        % together with (6) from Tong, Lin (2005):
+        %   P(Ionization) = 1 - exp( - \int w(t) dt )
+        % but do not integrate until infinity.
+        % Note: (4) of Cao et al. (2006) is wrong, it should be |a(t)|^2 so here
+        %       we use sqrt
+        lewenstein_config.ground_state_amplitude = sqrt(-exp(-cumtrapz(t_cmc,w)));
       end
 
       % compute dipole response
