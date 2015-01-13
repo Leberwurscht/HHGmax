@@ -1,4 +1,4 @@
-% Calculates the fourier-transformed dipole response on a space grid, using the
+% Calculates the fourier-transformed dipole response on a spatial grid, using the
 % Lewenstein model as implemented in lewenstein.cpp.
 %
 % Parameters:
@@ -113,7 +113,7 @@
 %           coefficients
 %   response_cmc - an array with size length(yv) x length(xv) x length(zv) x
 %                  C x length(omega), containing the dipole response spectrum
-%                  at each space grid point, where C is the number of
+%                  at each spatial grid point, where C is the number of
 %                  components (1 for linear polarization, 2 for elliptical
 %                  polarization)
 %   progress (optional) - information about the progress of the computation, as

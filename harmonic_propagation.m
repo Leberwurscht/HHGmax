@@ -1,4 +1,4 @@
-% Computes the dipole response on a space grid using dipole_response.m and
+% Computes the dipole response on a spatial grid using dipole_response.m and
 % calculates the resulting complex field amplitude in the last z plane.
 %
 % Note: Only absorption of harmonics is considered, but effects like change

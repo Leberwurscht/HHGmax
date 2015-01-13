@@ -7,7 +7,7 @@ Description
 ~~~~~~~~~~~
 
 The module ``harmonic_propagation.m`` simulates the high harmonic
-generation on a space grid using ``dipole_response.m`` and calculates
+generation on a spatial grid using ``dipole_response.m`` and calculates
 the complex electric field amplitude of the harmonic radiation within
 the last :math:`z` plane of the grid. The ``dipole_response`` function
 is called for each :math:`z` slice of the grid, so that it can be
@@ -76,7 +76,7 @@ The arguments are:
 
    -  ``config.density`` is the density of the gas, in
       :math:`\milli\meter^{-3}`. Currently, the gas density is assumed
-      to be constant over the entire space grid.
+      to be constant over the entire spatial grid.
 
    -  ``config.pressure`` (optional) can be used instead of
       ``config.density`` to provide the gas pressure in :math:`\bbar`.

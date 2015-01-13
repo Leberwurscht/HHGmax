@@ -4,7 +4,7 @@
 time_steps = 200; % per period
 t_cmc = -40*2*pi : 2*pi/time_steps : 40*2*pi; % 80 periods
 
-% configure space grid
+% configure spatial grid
 xv = [0 0.005]; % mm
 yv = [0]; % mm
 zv = [0 0.200]; % mm

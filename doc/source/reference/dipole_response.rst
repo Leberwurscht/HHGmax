@@ -7,7 +7,7 @@ Description
 ~~~~~~~~~~~
 
 The module ``dipole_response.m`` calculates the Fourier-transformed
-dipole response on a given space grid, using the Lewenstein model as
+dipole response on a given spatial grid, using the Lewenstein model as
 implemented in ``lewenstein.cpp``. Calculating the dipole responses is
 what takes most of the time when running the program, therefore an
 intelligent on-disk cache is implemented so that already computed dipole
@@ -39,8 +39,8 @@ The return values are:
    angular frequency of the driving field.
 
 -  ``response_cmc(yi,xi,zi,C,omega_i)`` contains the dipole response for
-   each space grid point and frequency. It is an array with five
-   indices, where the first three give the position in the space grid
+   each spatial grid point and frequency. It is an array with five
+   indices, where the first three give the position in the spatial grid
    (corresponding to the input arguments ``yv``, ``xv`` and ``zv``), the
    last one gives the angular frequency (corresponding to the return
    value ``omega``), and ``C`` numerates the components of the dipole
@@ -50,7 +50,7 @@ The return values are:
 -  ``progress`` (optional) is a ``struct()`` that contains information
    about how much of the calculation is already done and how much time
    was spent. Using this return value only makes sense if you subdivide
-   your space grid and call the ``dipole_response`` function multiple
+   your spatial grid and call the ``dipole_response`` function multiple
    times. The returned ``struct()`` has the following fields:
 
    -  ``progress.points_total`` is the total number of grid points for
@@ -225,7 +225,7 @@ The arguments of the ``dipole_response`` function are:
 -  ``progress`` (optional) is a ``struct()`` that contains information
    about how much of the calculation is already done and how much time
    was spent. Passing this as an argument only makes sense if you
-   subdivide your space grid and call the ``dipole_response`` function
+   subdivide your spatial grid and call the ``dipole_response`` function
    multiple times. The passed ``struct()`` must have at least the field
    ``progress.points_total`` and it may have the other fields described
    before (see list of return values).

@@ -5,7 +5,7 @@ time_steps = 70; % per period
 t_cmc = 0 : 2*pi/time_steps : 2*pi;
 t_cmc = t_cmc(1:end-1);
 
-% configure space grid
+% configure spatial grid
 xv = -.010:0.0002:.010;  % 20 um
 yv = -.010:0.0002:.010;  % 20 um
 zv = -0.025:0.005:0.025; % 50 um

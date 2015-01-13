@@ -15,7 +15,7 @@ dipole response from a given driving field :math:`\vect E(t)` and is
 able to deal with elliptically polarized fields.
 
 This module is rather low-lewel, so you might prefer to use the
-``dipole_response.m`` module which has a more convenient interface and
+:ref:`dipole_response` module which has a more convenient interface and
 calls this module for you.
 
 Arguments and Return Values

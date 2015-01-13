@@ -1,6 +1,6 @@
 .. _single-atom:
 
-Single Atom Dipole Response
+Single-Atom Dipole Response
 ===========================
 
 The simplest thing that can be done with the framework is to compute the non-linear
@@ -9,7 +9,7 @@ you will get the dipole spectrum, but it is also possible to get the time evolut
 using a Fourier transformation which will be shown later.
 
 We use the module :ref:`dipole_response`, which can compute the dipole spectra from
-a given driving field on a rectangular space grid. You need to write a
+a given driving field on a rectangular spatial grid. You need to write a
 ``.m`` file that contains some obligatory configuration parameters and the call to the :ref:`dipole_response`
 module. Here is a simple example, together with the produced plot -- we will walk through the imporant parts of the file.
 
@@ -80,7 +80,7 @@ The parameters of the **model atom** used in the Lewenstein model:
 What follows these specifications is just a call to the :ref:`dipole_response` module,
 which computes the dipole spectrum at the desired position.
 Note that ``xv``, ``yv`` and ``zv`` may also be arrays, so that you can have the dipole spectrum computed on a
-rectangular space grid. The second return value of the function is a complex array ``response(yi,xi,zi,C,omega_i)``
+rectangular spatial grid. The second return value of the function is a complex array ``response(yi,xi,zi,C,omega_i)``
 with five indices; the first three are for position, the fourth specifies the component
 of the electric field and is always :math:`1` for linearly polarized fields, and the last one refers
 to the angular frequency which is given by the first return value.
