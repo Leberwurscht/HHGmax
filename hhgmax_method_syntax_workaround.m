@@ -14,7 +14,7 @@
 %
 %     function ret = subsref(instance, idx)
 %     % map instance.method(...) to classname_method(instance,...)
-%     method_syntax_workaround
+%     hhgmax_method_syntax_workaround
 %
 %   Note: Methods without a return value are not supported, you always must
 %         return something. However, you can use an empty value like [].

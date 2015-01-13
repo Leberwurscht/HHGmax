@@ -1,4 +1,4 @@
-function instance = cache_file(xn,yn,zv,components,omegan,config,metadata)
+function instance = hhgmax_cache_file(xn,yn,zv,components,omegan,config,metadata)
 
 % check if cache directory is set
 if ~isfield(config, 'directory')
@@ -100,11 +100,11 @@ instance.structure.variables.finished = {'finished'};
 instance.zv = zv;
 
 % chose backend
-instance.backend = @binary_file_netcdf; % default
+instance.backend = @hhgmax_binary_file_netcdf; % default
 instance.extension = '.nc';
 if isfield(config, 'backend')
   if strcmpi(config.backend, 'fallback')
-    instance.backend = @binary_file_fallback;
+    instance.backend = @hhgmax_binary_file_fallback;
     instance.extension = '.dat';
   elseif ~strcmpi(config.backend, 'NetCDF')
     error('invalid file cache backend');
@@ -129,4 +129,4 @@ RAM_per_frequency = components*xn*yn * 8 * 2;
 instance.transpose_chunksize = round(instance.transpose_RAM/RAM_per_frequency);
 
 % convert struct to class
-instance = class(instance, 'cache_file');
+instance = class(instance, 'hhgmax_cache_file');

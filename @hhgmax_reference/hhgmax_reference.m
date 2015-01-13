@@ -1,4 +1,4 @@
-function instance = reference(data)
+function instance = hhgmax_reference(data)
 % THE PROBLEM:
 %   There is no efficient equivalent to passing arguments by reference to a
 %   function which is both compatible to Matlab and Octave, like this:
@@ -18,9 +18,9 @@ function instance = reference(data)
 %   function provides the following interface:
 %
 %     > % create new reference
-%     > large_array_ref = reference(zeros([1000 1000 100]));
+%     > large_array_ref = hhgmax_reference(zeros([1000 1000 100]));
 %     >
-%     > % modify data on the reference
+%     > % modify data on the reference (modify array_reference is arbitrary function)
 %     > modify_array_reference(large_array_ref);
 %     >
 %     > % get data on the reference
@@ -59,8 +59,8 @@ if ~isnumeric(data)
 end
 
 % get reference
-reference_low_level('data{length(data)+1} = varargin{1};', data);
-instance.reference = reference_low_level('length(data);');
+hhgmax_reference_low_level('data{length(data)+1} = varargin{1};', data);
+instance.reference = hhgmax_reference_low_level('length(data);');
 
 % convert struct to class instance
-instance = class(instance, 'reference');
+instance = class(instance, 'hhgmax_reference');

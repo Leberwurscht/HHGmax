@@ -1,5 +1,5 @@
 % Calculates the fourier-transformed dipole response on a spatial grid, using the
-% Lewenstein model as implemented in lewenstein.cpp.
+% Lewenstein model as implemented in hhgmax_lewenstein.cpp.
 %
 % Parameters:
 %   t_cmc - the time axis in comoving coordinates, in scaled atomic units,
@@ -98,7 +98,7 @@
 %   config.components (optional) - if using non-linear polarization, this must be set
 %                                  to the number of electric field vector components
 %   any config fields required by config.driving_field
-%     dipole-matrix-element-specific config fields required by lewenstein.cpp
+%     dipole-matrix-element-specific config fields required by hhgmax_lewenstein.cpp
 %   progress (optional) - a struct() that contains information about the
 %                         progress of the calculation, as returned as third
 %                         return value (useful if this function is called
@@ -122,7 +122,7 @@
 % Example:
 %   see PDF documentation
 
-function [omega, response_cmc, progress] = dipole_response(t_cmc, xv, yv, zv,...
+function [omega, response_cmc, progress] = hhgmax_dipole_response(t_cmc, xv, yv, zv,...
                                                            config, progress,...
                                                            return_omega)
 
@@ -191,7 +191,14 @@ if isfield(config,'precomputed_driving_field')
   end
 else
   % create handle for driving field function
-  driving_field = str2func(config.driving_field);
+  dotpos = strfind(config.driving_field, '.');
+
+  if dotpos
+    % replace *.method_name by hhgmax_method_name to avoid problems with Octave
+    driving_field = str2func(['hhgmax_' config.driving_field(dotpos+1:end)]);
+  else
+    driving_field = str2func(config.driving_field);
+  end
 end
 
 % shift time axis to zero (required for lewenstein and window setup)
@@ -221,7 +228,7 @@ lewenstein_config.weights = weights;
 
 % create omega axis and prepare data reduction
 deltat = t_cmc(2);
-[omega, cache_keep] = get_omega_axis(t_cmc, config);
+[omega, cache_keep] = hhgmax_get_omega_axis(t_cmc, config);
 
 % apply return_omega
 if exist('return_omega','var') && length(return_omega)
@@ -273,7 +280,7 @@ else
 end
 
 % convert ionization potential from eV to scaled atomic units
-lewenstein_config.ip = sau_convert(config.ionization_potential*1.602176565e-19, 'U', 'SAU', config);
+lewenstein_config.ip = hhgmax_sau_convert(config.ionization_potential*1.602176565e-19, 'U', 'SAU', config);
 
 % setup window for d(t)
 t_window_pts = length(find(t_cmc<2*pi*t_window_length));
@@ -350,7 +357,7 @@ if ~isfield(config,'cache')
   config.cache = struct();
 end
 
-d_cache = cache(cache_xn,cache_yn,zv,components,length(omega),config.cache,metadata);
+d_cache = hhgmax_cache(cache_xn,cache_yn,zv,components,length(omega),config.cache,metadata);
 d_cache.open();
 
 % parse ionization rate option
@@ -362,10 +369,18 @@ if isfield(config,'static_ionization_rate')
     error('You need to specify a E axis for your ionization rates using the static_ionization_rate_field config option.');
   end
 
-  irate = 1 ./ sau_convert(1./config.static_ionization_rate, 't', 'SAU', config);
-  irate_E = sau_convert(config.static_ionization_rate_field,'E','SAU',config);
+  irate = 1 ./ hhgmax_sau_convert(1./config.static_ionization_rate, 't', 'SAU', config);
+  irate_E = hhgmax_sau_convert(config.static_ionization_rate_field,'E','SAU',config);
 elseif isfield(config,'ionization_fraction')
-  ionization_fraction = str2func(config.ionization_fraction);
+  % create handle for driving field function
+  dotpos = strfind(config.driving_field, '.');
+
+  if dotpos
+    % replace *.method_name by hhgmax_method_name to avoid problems with Octave
+    ionization_fraction = str2func(['hhgmax_' config.ionization_fraction(dotpos+1:end)]);
+  else
+    ionization_fraction = str2func(config.ionization_fraction);
+  end
 else
   % in this case prepare ground state amplitude already here for performance
   lewenstein_config.ground_state_amplitude = ones(1,length(t_cmc));
@@ -476,7 +491,7 @@ for zi=1:length(zv)
       end
 
       % compute dipole response
-      d_t = lewenstein(t_cmc, Et_cmc, lewenstein_config);
+      d_t = hhgmax_lewenstein(t_cmc, Et_cmc, lewenstein_config);
       d_t = d_t(:,length(d_t)-fft_length+1:length(d_t));
       if size(d_t,1)~=components
         error(['Got more/less components than expected from dipole response module. '...

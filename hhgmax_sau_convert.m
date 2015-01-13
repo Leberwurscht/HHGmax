@@ -17,9 +17,9 @@
 %   > config = struct();
 %   > config.wavelength = 1e-3; % mm
 %   >
-%   > T_SI = sau_convert(2*pi, 't', 'SI', config);
+%   > T_SI = hhgmax_sau_convert(2*pi, 't', 'SI', config);
 %
-function converted = sau_convert(value, quantity, target, config)
+function converted = hhgmax_sau_convert(value, quantity, target, config)
 
 % some needed physical constants, in SI units
 c = 299792458;

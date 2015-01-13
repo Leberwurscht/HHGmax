@@ -25,7 +25,7 @@
 %                       provided)
 %
 
-function info_struct = information(config, gain)
+function info_struct = hhgmax_information(config, gain)
 
 if ~exist('gain', 'var')
   gain = 1;

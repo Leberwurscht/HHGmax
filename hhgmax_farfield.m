@@ -40,7 +40,7 @@
 % Example:
 %   see PDF documentation
 
-function [E_plane] = farfield(xv,yv,z_U,omega,U, config)
+function [E_plane] = hhgmax_farfield(xv,yv,z_U,omega,U, config)
 
 % setup rotation matrix R for screen plane
 R = eye(3);

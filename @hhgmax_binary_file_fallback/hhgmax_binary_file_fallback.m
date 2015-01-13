@@ -1,4 +1,4 @@
-function instance = binary_file_fallback(filename, structure)
+function instance = hhgmax_binary_file_fallback(filename, structure)
 
 % if dimensions are missing in structure, read them from file
 if any(isnan(cell2mat(struct2cell(structure.dimensions))))
@@ -40,4 +40,4 @@ for ii=1:length(variables)
 end
 instance.total_size = current_position;
 
-instance = class(instance, 'binary_file_fallback');
+instance = class(instance, 'hhgmax_binary_file_fallback');

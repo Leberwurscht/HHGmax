@@ -22,16 +22,16 @@
 %   > config.peak_intensity = 1e14;
 %   >
 %   > t=-30*2*pi:.01:30*2*pi;
-%   > [omega, coeff]=pulse(t, struct('wavelength',1e-3, 'pulse_duration',70,...
+%   > [omega, coeff]=hhgmax_pulse(t, struct('wavelength',1e-3, 'pulse_duration',70,...
 %   >                                'pulse_shape','gaussian'));
 %   > config.omega = omega;
 %   > config.pulse_coefficients = coeff;
 %   >
-%   > Et = plane_wave_driving_field(0, 0, 0, config);
+%   > Et = hhgmax_plane_wave_driving_field(0, 0, 0, config);
 %   > plot(t, real(Et), 'b');
 %   > title('Driving field at z=0');
 %
-function [Et_cmc] = plane_wave_driving_field(x, y, z, config)
+function [Et_cmc] = hhgmax_plane_wave_driving_field(x, y, z, config)
 
 % extract and check arguments
 omega = config.omega;
@@ -45,7 +45,7 @@ E0_SI = sqrt(2 * config.peak_intensity*1e4 / 299792458 / 8.854187817e-12);
 	% = sqrt(2*I/c/eps0);
 
 % convert it to scaled atomic units
-E0 = sau_convert(E0_SI, 'E', 'SAU', config);
+E0 = hhgmax_sau_convert(E0_SI, 'E', 'SAU', config);
 
 % calculate field at (x,y,z) in co-moving coordinates, by inverse Fourier
 % transformation of the pulse coefficients

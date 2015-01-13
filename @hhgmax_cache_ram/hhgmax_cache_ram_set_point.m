@@ -1,4 +1,4 @@
-function ret = cache_ram_set_point(instance, xi, yi, zi, d_omega)
+function ret = hhgmax_cache_ram_set_point(instance, xi, yi, zi, d_omega)
 
 instance.data(zi,yi,xi,:,:) = d_omega;
 

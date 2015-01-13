@@ -32,14 +32,14 @@
 %   > config.wavelength = 1e-3;
 %   > config.pulse_duration = 70;
 %   > config.pulse_shape = 'cos_sqr';
-%   > [omega, coefficients]=pulse(t, config);
+%   > [omega, coefficients]=hhgmax_pulse(t, config);
 %   > plot(t, real(ifft(conj(coefficients))));
 %
-function [omega, coefficients] = pulse(t, config)
+function [omega, coefficients] = hhgmax_pulse(t, config)
 
 % convert pulse duration from femtoseconds to scaled atomic units
 if isfield(config, 'pulse_shape') && ~strcmpi(config.pulse_shape, 'constant')
-  fwhm = sau_convert(config.pulse_duration*1e-15, 't', 'SAU', config);
+  fwhm = hhgmax_sau_convert(config.pulse_duration*1e-15, 't', 'SAU', config);
 
   if t(1)/(fwhm/2) > -2.5
     warning('lower limit of t interval might cut pulse')

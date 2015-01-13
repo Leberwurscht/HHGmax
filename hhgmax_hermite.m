@@ -1,6 +1,6 @@
 % Calculates the physical hermite polynomials using the
 % recurrrence relation H_{n+1}(x)= 2x H_n(x) - 2n H_{n-1}(x).
-function H = hermite(n, x)
+function H = hhgmax_hermite(n, x)
 
 H_before = 0;
 H = ones(size(x));

@@ -1,4 +1,4 @@
-function rate_SI = tong_lin_ionization_rate(E_SI, config)
+function rate_SI = hhgmax_tong_lin_ionization_rate(E_SI, config)
 % Calculates the static field ionization rate using the empirical formula
 % proposed by Tong, Lin (2005), which is the ADK formula with a correction
 % for higher field strengths.

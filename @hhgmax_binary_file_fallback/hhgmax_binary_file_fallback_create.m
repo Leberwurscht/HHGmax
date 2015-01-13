@@ -1,4 +1,4 @@
-function ret = binary_file_fallback_create(instance)
+function ret = hhgmax_binary_file_fallback_create(instance)
 
 % open file
 fd = fopen(instance.filename,'w');

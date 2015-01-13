@@ -5,14 +5,14 @@ Alternatively you could use lewenstein.hpp directly from your own C++ code.
 
 Compilation for Ubuntu/Octave:
   # apt-get install liboctave-dev build-essential
-  # CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex lewenstein.cpp
+  # CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex hhgmax_lewenstein.cpp
 
   notes: * option -ffast-math will improve speed by 10% but might be unsafe
          * for older systems, you may have to replace liboctave-dev by octave-headers
 
 Compilation for Windows/Matlab:
   From within Matlab:
-    > mex lewenstein.cpp COMPFLAGS="/openmp $COMPFLAGS"
+    > mex hhgmax_lewenstein.cpp COMPFLAGS="/openmp $COMPFLAGS"
 
   For installing the compiler, see the compilation chapter of the tutorial.
 

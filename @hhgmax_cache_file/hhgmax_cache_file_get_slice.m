@@ -1,4 +1,4 @@
-function slice_data = cache_file_get_slice(instance, zi, query_start, query_end)
+function slice_data = hhgmax_cache_file_get_slice(instance, zi, query_start, query_end)
 
 % preallocate memory for result
 dims = instance.structure.dimensions;

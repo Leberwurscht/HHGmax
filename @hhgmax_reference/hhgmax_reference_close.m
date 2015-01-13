@@ -1,5 +1,5 @@
-function ret = reference_close(instance)
+function ret = hhgmax_reference_close(instance)
 
-reference_low_level('data{varargin{1}} = [];', instance.reference);
+hhgmax_reference_low_level('data{varargin{1}} = [];', instance.reference);
 
 ret = [];

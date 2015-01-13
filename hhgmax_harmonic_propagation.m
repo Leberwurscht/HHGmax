@@ -1,4 +1,4 @@
-% Computes the dipole response on a spatial grid using dipole_response.m and
+% Computes the dipole response on a spatial grid using hhgmax_dipole_response.m and
 % calculates the resulting complex field amplitude in the last z plane.
 %
 % Note: Only absorption of harmonics is considered, but effects like change
@@ -11,7 +11,7 @@
 %   xv - array of x values
 %   yv - array of y values
 %   zv - array of z values
-%   dipole_response_config - struct() as described in dipole_response.m;
+%   dipole_response_config - struct() as described in hhgmax_dipole_response.m;
 %                            wavelength field is also used from this file
 %                            (note: non-linear polarization is not supported)
 %   config - struct() of following fields:
@@ -34,7 +34,7 @@
 %                                  law, and config.density can be omitted
 %     config.nochecks (optional) - if 1, the x/y/z discretization checks are
 %                                  disabled for better performance
-%   return_omega (optional) - as described in dipole_response.m
+%   return_omega (optional) - as described in hhgmax_dipole_response.m
 %
 % Return values:
 %   z_max - the z value of the plane in which the field is computed
@@ -52,7 +52,7 @@
 % Example:
 %   see PDF documentation
 
-function [z_max,omega,U] = harmonic_propagation(t_cmc, xv, yv, zv, ...
+function [z_max,omega,U] = hhgmax_harmonic_propagation(t_cmc, xv, yv, zv, ...
                                                 dipole_response_config, config, ...
                                                 return_omega)
 
@@ -78,7 +78,7 @@ end
 % get absorption data
 if isfield(config, 'transmission')
   % convert transmission energy from eV to scaled atomic units
-  absorption_omega = sau_convert(config.transmission_energy*1.602176565e-19, 'U', 'SAU', dipole_response_config);
+  absorption_omega = hhgmax_sau_convert(config.transmission_energy*1.602176565e-19, 'U', 'SAU', dipole_response_config);
 
   % convert transmission for 1cm to absorption coefficient in mm^-1
   alpha_30torr = -log(config.transmission)/10;
@@ -116,7 +116,7 @@ for z_i=1:length(zv)
   current_z = zv(z_i);
 
   % get dipole response in this z plane
-  [omega, d, progress] = dipole_response(t_cmc, xv,yv,current_z,...
+  [omega, d, progress] = hhgmax_dipole_response(t_cmc, xv,yv,current_z,...
                                          dipole_response_config, progress, return_omega);
   components = size(d,4);
   if size(d,4)>2
@@ -195,16 +195,16 @@ for z_i=1:length(zv)
   end
 
   % trapezoidal rule
-  deltaz = sau_convert(current_z*1e-3-last_z*1e-3, 's', 'SAU', dipole_response_config);
+  deltaz = hhgmax_sau_convert(current_z*1e-3-last_z*1e-3, 's', 'SAU', dipole_response_config);
   U = U + 0.5*( last_integrand + current_integrand )*deltaz;
   last_z = current_z;
   last_integrand = current_integrand;
 end
 
 % apply correct prefactor of the integral
-c_SAU = sau_convert(299792458, 'v', 'SAU', dipole_response_config);
+c_SAU = hhgmax_sau_convert(299792458, 'v', 'SAU', dipole_response_config);
 epsilon0_SAU = 1/4/pi;
-density_SAU = 1/sau_convert(1/density, 'V', 'SAU', dipole_response_config);
+density_SAU = 1/hhgmax_sau_convert(1/density, 'V', 'SAU', dipole_response_config);
 
 U = U * diag(1i/2/epsilon0_SAU/c_SAU * omega * density_SAU ./ n .* ...
              exp(1i * n .* k * z_max) );

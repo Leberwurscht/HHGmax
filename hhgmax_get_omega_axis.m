@@ -1,4 +1,4 @@
-function [omega, keep] = get_omega_axis(t_cmc, config)
+function [omega, keep] = hhgmax_get_omega_axis(t_cmc, config)
 
 deltat = t_cmc(2)-t_cmc(1);
 domega = 2*pi/deltat/length(t_cmc);

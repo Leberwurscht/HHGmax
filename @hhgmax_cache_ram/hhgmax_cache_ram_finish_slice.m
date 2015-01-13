@@ -1,4 +1,4 @@
-function ret = cache_ram_finish_slice(instance, zi)
+function ret = hhgmax_cache_ram_finish_slice(instance, zi)
 
 instance.finished(zi) = 1;
 

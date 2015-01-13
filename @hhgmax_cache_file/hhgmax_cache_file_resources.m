@@ -1,4 +1,4 @@
-function resources = cache_file_resources(instance)
+function resources = hhgmax_cache_file_resources(instance)
 
 xn = instance.structure.dimensions.x;
 yn = instance.structure.dimensions.y;

@@ -1,4 +1,4 @@
-function instance = binary_file_netcdf(filename, structure)
+function instance = hhgmax_binary_file_netcdf(filename, structure)
 
 % check for support
 if ~exist('+netcdf/create','file') && ~exist('netcdf_create')
@@ -28,4 +28,4 @@ end
 instance.filename = filename;
 instance.structure = structure;
 
-instance = class(instance, 'binary_file_netcdf');
+instance = class(instance, 'hhgmax_binary_file_netcdf');

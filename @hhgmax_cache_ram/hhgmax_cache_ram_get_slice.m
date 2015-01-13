@@ -1,4 +1,4 @@
-function slice = cache_ram_get_slice(instance, zi, query_start, query_end)
+function slice = hhgmax_cache_ram_get_slice(instance, zi, query_start, query_end)
 
 if instance.finished(zi)
   slice = instance.data(zi,:,:,:,query_start:query_end);

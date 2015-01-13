@@ -1,4 +1,4 @@
-function ret = reference_low_level(expression, varargin)
+function ret = hhgmax_reference_low_level(expression, varargin)
 % Used by the reference class.
 % This function only exists to maintain a persistent variable and to provide
 % access to it using eval.

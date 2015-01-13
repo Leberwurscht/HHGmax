@@ -19,9 +19,9 @@
 %   > config = struct();
 %   > config.beam_waist = 0.08;
 %   > config.mode = 'TEM00';
-%   > gh_mode(0, 0, 1, 2*pi/1e-3, config)
+%   > hhgmax_gh_mode(0, 0, 1, 2*pi/1e-3, config)
 %
-function field = gh_mode(x,y,z,k,config)
+function field = hhgmax_gh_mode(x,y,z,k,config)
 
 % apply rotation if necessary
 if isfield(config, 'rotation')
@@ -92,8 +92,8 @@ for mode_i=1:length(mode_coefficients)
 	coefficient = mode_coefficients(mode_i);
 
 	z_f = w0 ./ w .* exp(i*(k*z-(1+n+m)*atan(z./z_R)));
-	x_f = hermite(n,sqrt(2)*x./w).*exp(-x.^2./w.^2+i*k.*x.^2./(2*R));
-	y_f = hermite(m,sqrt(2)*y./w).*exp(-y.^2./w.^2+i*k.*y.^2./(2*R));
+	x_f = hhgmax_hermite(n,sqrt(2)*x./w).*exp(-x.^2./w.^2+i*k.*x.^2./(2*R));
+	y_f = hhgmax_hermite(m,sqrt(2)*y./w).*exp(-y.^2./w.^2+i*k.*y.^2./(2*R));
 
 	field = field + coefficient * z_f .* x_f .* y_f;
 end

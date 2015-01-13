@@ -1,4 +1,4 @@
-function data = binary_file_fallback_write(instance, variable, start, data)
+function data = hhgmax_binary_file_fallback_write(instance, variable, start, data)
 
 % open file
 fd = fopen(instance.filename,'r+');

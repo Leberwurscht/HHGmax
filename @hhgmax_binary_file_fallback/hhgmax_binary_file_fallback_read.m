@@ -1,4 +1,4 @@
-function data = binary_file_fallback_read(instance, variable, start, count)
+function data = hhgmax_binary_file_fallback_read(instance, variable, start, count)
 
 % preallocate
 if length(count)==1

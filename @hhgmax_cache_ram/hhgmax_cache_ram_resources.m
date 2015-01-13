@@ -1,4 +1,4 @@
-function resources = cache_ram_resources(instance)
+function resources = hhgmax_cache_ram_resources(instance)
 
 resources = struct();
 resources.disk = 0;

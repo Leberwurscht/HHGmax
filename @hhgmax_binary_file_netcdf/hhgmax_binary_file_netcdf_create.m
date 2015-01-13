@@ -1,4 +1,4 @@
-function ret = binary_file_netcdf_create(instance)
+function ret = hhgmax_binary_file_netcdf_create(instance)
 
 dimensions = fieldnames(instance.structure.dimensions);
 variables = fieldnames(instance.structure.variables);

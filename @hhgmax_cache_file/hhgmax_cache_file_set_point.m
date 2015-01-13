@@ -1,4 +1,4 @@
-function ret = cache_file_set_point(instance, xi, yi, zi, d_omega)
+function ret = hhgmax_cache_file_set_point(instance, xi, yi, zi, d_omega)
 
 % create file handle
 filename = fullfile(instance.fast_directory, ['dipole_response_z' num2str(instance.zv(zi)) instance.extension]);
