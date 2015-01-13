@@ -1,5 +1,8 @@
 % for executing, copy to main folder or use addpath
 
+% load HHGmax
+hhgmax = hhgmax_load();
+
 % setup time axis: 100 driving field periods
 t= -50*2*pi : 2*pi/100 : 50*2*pi;
 
@@ -9,7 +12,7 @@ config.pulse_duration = 30; % fs
 config.pulse_shape = 'cos_sqr';
 
 % compute pulse coefficients
-[omega, coefficients] = pulse(t, config);
+[omega, coefficients] = hhgmax.pulse(t, config);
 
 % plot pulse and spectrum
 subplot(2,1,1);

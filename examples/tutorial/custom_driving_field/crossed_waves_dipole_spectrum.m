@@ -1,6 +1,7 @@
-% add program directory to search path
-% (you need to adapt this!)
+% add program directory to search path and load HHGmax
+% (you need to adapt path!)
 addpath('../../../');
+hhgmax = hhgmax_load();
 
 % initialize config struct
 config = struct();
@@ -33,7 +34,7 @@ config.tau_window_length = 0.5; % driving field periods
 % to be expected
 xv = [0 0.028648]; yv = 0; zv = 0;
 
-[omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+[omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 response_origin = squeeze(response(1,1,1,1,:));
 response_test = squeeze(response(1,2,1,1,:));
 

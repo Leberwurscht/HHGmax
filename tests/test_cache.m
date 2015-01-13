@@ -11,7 +11,7 @@ data = rand(zn,yn,xn,components,omegan);
 data = data + rand(zn,yn,xn,components,omegan)*1i;
 
 % test resources method of ram backend
-c = cache(xn,yn,zv,components,omegan);
+c = hhgmax_cache(xn,yn,zv,components,omegan);
 res = c.resources();
 assert(res.disk==0);
 assert(res.ram==xn*yn*zn*components*omegan*8*2);
@@ -53,7 +53,7 @@ config.directory = '/tmp/testcache';
 config.fast_directory = '/tmp/testcache_fast';
 config.transpose_RAM = 1;
 metadata = struct('test',1);
-c = cache(xn,yn,zv,components,omegan,config,metadata);
+c = hhgmax_cache(xn,yn,zv,components,omegan,config,metadata);
 res = c.resources()
 assert(res.disk==xn*yn*components*omegan*8*2 * (zn+2));
 assert(res.ram==min(config.transpose_RAM*1e9,xn*yn*components*omegan*8*2));

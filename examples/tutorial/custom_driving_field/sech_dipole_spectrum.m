@@ -1,6 +1,7 @@
-% add program directory to search path
-% (you need to adapt this!)
+% add program directory to search path and load HHGmax
+% (you need to adapt path!)
 addpath('../../../');
+hhgmax = hhgmax_load();
 
 % initialize config struct
 config = struct();
@@ -31,12 +32,12 @@ config.t_window_length = 5; % driving field periods
 
 % compute dipole spectrum at x=y=z=0
 xv = 0; yv = 0; zv = 0;
-[omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+[omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 response000 = squeeze(response(1,1,1,1,:));
 
 % plot driving pulse at origin
 subplot(2,1,1);
-t_fs = sau_convert(t_cmc, 't', 'SI', config)/1e-15;
+t_fs = hhgmax.sau_convert(t_cmc, 't', 'SI', config)/1e-15;
 E_cmc = sech_driving_field(0,0,0, config);
 plot(t_fs, real(E_cmc));
 title('driving pulse');

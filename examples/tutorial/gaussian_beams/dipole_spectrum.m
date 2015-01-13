@@ -1,6 +1,7 @@
-% add program directory to search path
-% (you need to adapt this!)
+% add program directory to search path and load HHGmax
+% (you need to adapt path!)
 addpath('../../../');
+hhgmax = hhgmax_load();
 
 % initialize config struct
 config = struct();
@@ -15,7 +16,7 @@ config.periodic = 0;
 
 % specify callback function for driving field computation,
 % then set required config options for this callback
-config.driving_field = 'gh_driving_field';
+config.driving_field = 'hhgmax.gh_driving_field';
 config.mode = 'TEM00';
 config.beam_waist = 0.010; % mm
 
@@ -24,7 +25,7 @@ config.peak_intensity = 1e14; % W/cm^2
 
 config.pulse_shape = 'gaussian';
 config.pulse_duration = 30; % fs
-[pulse_omega, pulse_coefficients] = pulse(t_cmc, config);
+[pulse_omega, pulse_coefficients] = hhgmax.pulse(t_cmc, config);
 config.omega = pulse_omega;
 config.pulse_coefficients = pulse_coefficients;
 
@@ -38,7 +39,7 @@ config.t_window_length = 5; % driving field periods
 
 % compute dipole spectrum at different positions
 xv = [0 0.005]; yv = 0; zv = [0 0.200];
-[omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+[omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 
 % plot dipole responses
 for xi=1:2

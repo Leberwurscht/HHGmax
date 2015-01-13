@@ -19,12 +19,15 @@
 %
 function E_cmc = crossed_waves_driving_field(x, y, z, config)
 
+% load HHGmax to be able to access sau_convert
+hhgmax = hhgmax_load();
+
 % convert electric field amplitude to scaled atomic units
-E0 = sau_convert(config.amplitude, 'E', 'SAU', config);
+E0 = hhgmax.sau_convert(config.amplitude, 'E', 'SAU', config);
 
 % convert co-moving time axis to conventional one
 c = 299792458;
-delta_t = sau_convert(z*1e-3/c, 't', 'SAU', config);
+delta_t = hhgmax.sau_convert(z*1e-3/c, 't', 'SAU', config);
 t = config.t_cmc + delta_t;
 
 % set angular frequency and wave number

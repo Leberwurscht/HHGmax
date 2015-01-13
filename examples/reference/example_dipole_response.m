@@ -1,5 +1,8 @@
 % for executing, copy to main folder or use addpath
 
+% load HHGmax
+hhgmax = hhgmax_load();
+
 % configure time axis
 time_steps = 200; % per period
 t_cmc = -40*2*pi : 2*pi/time_steps : 40*2*pi; % 80 periods
@@ -14,7 +17,7 @@ config = struct();
 config.wavelength = 1.0e-3; % mm
 
 % configure driving field
- config.driving_field = 'gh_driving_field';
+ config.driving_field = 'hhgmax.gh_driving_field';
 
  % basic configuration
  config.peak_intensity = 7e13; % W/cm^2
@@ -22,7 +25,7 @@ config.wavelength = 1.0e-3; % mm
  % temporal shape
  config.pulse_shape = 'gaussian';
  config.pulse_duration = 100; % fs
- [pulse_omega, pulse_coefficients] = pulse(t_cmc, config);
+ [pulse_omega, pulse_coefficients] = hhgmax.pulse(t_cmc, config);
  config.omega = pulse_omega;
  config.pulse_coefficients = pulse_coefficients;
 
@@ -48,7 +51,7 @@ config.cache_omega_ranges = [0 50];
 config.cachedir = 'example_dipole_response_cache';
 
 % call dipole_response
-[omega, response_cmc] = dipole_response(t_cmc, xv, yv, zv, config);
+[omega, response_cmc] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 
 % plot dipole spectrum at different positions
 subplot(2,2,1);

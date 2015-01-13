@@ -15,12 +15,15 @@
 %
 function E_cmc = sech_driving_field(x, y, z, config)
 
+% load HHGmax to be able to access sau_convert
+hhgmax = hhgmax_load();
+
 % convert electric field to scaled atomic units
-E0 = sau_convert(config.amplitude, 'E', 'SAU', config);
+E0 = hhgmax.sau_convert(config.amplitude, 'E', 'SAU', config);
 
 % compute tau parameter for sech pulse from FWHM
 tau_fs = config.fwhm / 1.76;
-tau_SAU = sau_convert(tau_fs*1e-15, 't', 'SAU', config);
+tau_SAU = hhgmax.sau_convert(tau_fs*1e-15, 't', 'SAU', config);
 
 % compute envelope
 envelope = sech(config.t_cmc/tau_SAU);

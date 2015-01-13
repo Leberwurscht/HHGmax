@@ -1,6 +1,7 @@
-% add program directory to search path
-% (you need to adapt this!)
+% add program directory to search path and load HHGmax
+% (you need to adapt path!)
 addpath('../../../');
+hhgmax = hhgmax_load();
 
 % initialize config struct
 config = struct();
@@ -15,7 +16,7 @@ config.periodic = 0;
 
 % specify callback function for driving field computation,
 % then set required config options for this callback
-config.driving_field = 'gh_driving_field';
+config.driving_field = 'hhgmax.gh_driving_field';
 config.mode = 'TEM00';
 config.beam_waist = 0.010; % mm
 
@@ -24,7 +25,7 @@ config.peak_intensity = 1e14; % W/cm^2
 
 config.pulse_shape = 'gaussian';
 config.pulse_duration = 30; % fs
-[pulse_omega, pulse_coefficients] = pulse(t_cmc, config);
+[pulse_omega, pulse_coefficients] = hhgmax.pulse(t_cmc, config);
 config.omega = pulse_omega;
 config.pulse_coefficients = pulse_coefficients;
 
@@ -74,7 +75,7 @@ return_omega = [20.9 21.1];
 
 % call harmonic_propagation module which will use the dipole_response module
 % for calculating dipole spectra
-[z_max, omega, U] = harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config, return_omega);
+[z_max, omega, U] = hhgmax.harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config, return_omega);
 
 % initialize and tell the far field module the wavelength
 ff_config = struct('wavelength', config.wavelength);
@@ -97,7 +98,7 @@ ff_config.padding_y = [-0.03 0.03]; % mm
 ff_config.nochecks = 1;
 
 % compute far field for all harmonic frequencies
-E_plane = farfield(xv,yv,z_max,omega,U, ff_config);
+E_plane = hhgmax.farfield(xv,yv,z_max,omega,U, ff_config);
 
 % sum up intensities of different frequency and electric field componentes to
 % get total intensity

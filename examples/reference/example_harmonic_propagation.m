@@ -1,5 +1,8 @@
 % for executing, copy to main folder or use addpath
 
+% load HHGmax
+hhgmax = hhgmax_load();
+
 % configure time axis - only one period as we use periodic mode
 time_steps = 70; % per period
 t_cmc = 0 : 2*pi/time_steps : 2*pi;
@@ -15,14 +18,14 @@ config = struct();
 config.wavelength = 1.0e-3; % mm
 
 % configure driving field
- config.driving_field = 'gh_driving_field';
+ config.driving_field = 'hhgmax.gh_driving_field';
 
  % basic configuration
  config.peak_intensity = 7e13; % W/cm^2
 
  % temporal shape
  config.pulse_shape = 'constant'; % optional, is default value
- [pulse_omega, pulse_coefficients] = pulse(t_cmc, config);
+ [pulse_omega, pulse_coefficients] = hhgmax.pulse(t_cmc, config);
  config.omega = pulse_omega;
  config.pulse_coefficients = pulse_coefficients;
 
@@ -61,7 +64,7 @@ config.cachedir = 'example_harmonic_propagation_cache';
      % for 30 torr, 1 cm
 
 % call harmonic_propagation
-[z_max, omega, U] = harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config);
+[z_max, omega, U] = hhgmax.harmonic_propagation(t_cmc, xv, yv, zv, config, propagation_config);
 
 % plot electric field amplitude of harmonic radiation
 % - due to config.cache_omega_ranges and using periodic mode, the

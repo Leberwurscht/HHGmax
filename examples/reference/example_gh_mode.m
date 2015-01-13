@@ -1,5 +1,8 @@
 % for executing, copy to main folder or use addpath
 
+% load HHGmax
+hhgmax = hhgmax_load();
+
 % set wave number (assuming lambda=1um)
 k = 2*pi/1e-3; % mm^-1
 
@@ -32,9 +35,9 @@ z_R = k*config1.beam_waist^2/2;
 subplot_nr = 1;
 for config={config1, config2, config3}; config=config{1};
   % compute field at z=0, z=z_R, z=100*z_R
-  field_0 = gh_mode(x,y,0, k, config);
-  field_z_R = gh_mode(x,y,z_R, k, config);
-  field_far = gh_mode(100*x,100*y,100*z_R, k, config);
+  field_0 = hhgmax.gh_mode(x,y,0, k, config);
+  field_z_R = hhgmax.gh_mode(x,y,z_R, k, config);
+  field_far = hhgmax.gh_mode(100*x,100*y,100*z_R, k, config);
 
   % plot fields
   subplot(3,3,subplot_nr); subplot_nr = subplot_nr+1;
