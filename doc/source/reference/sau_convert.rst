@@ -1,13 +1,13 @@
 .. _sau_convert:
 
-sau_convert.m
--------------
+sau_convert
+-----------
 
 Description
 ~~~~~~~~~~~
 
 Most calculations are done in scaled atomic units internally. The
-``sau_convert.m`` module helps you to convert between SI units and
+``sau_convert`` module helps you to convert between SI units and
 scaled atomic units.
 
 Arguments and Return Values
@@ -17,7 +17,7 @@ The signature of the ``sau_convert`` function is
 
 ::
 
-    function converted = sau_convert(value, quantity, target, config)
+    function converted = hhgmax.sau_convert(value, quantity, target, config)
         
 
 The return value ``converted`` is the converted input value, either in

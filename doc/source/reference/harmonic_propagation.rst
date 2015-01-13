@@ -1,13 +1,13 @@
 .. _harmonic_propagation:
 
-harmonic_propagation.m
-----------------------
+harmonic_propagation
+--------------------
 
 Description
 ~~~~~~~~~~~
 
-The module ``harmonic_propagation.m`` simulates the high harmonic
-generation on a spatial grid using ``dipole_response.m`` and calculates
+The ``harmonic_propagation`` module simulates the high harmonic
+generation on a spatial grid using :ref:`dipole_response` and calculates
 the complex electric field amplitude of the harmonic radiation within
 the last :math:`z` plane of the grid. The ``dipole_response`` function
 is called for each :math:`z` slice of the grid, so that it can be
@@ -27,7 +27,7 @@ The signature of the ``harmonic_propagation`` function is
 
 ::
 
-    function [z_max,omega,U] = harmonic_propagation(t_cmc, xv,...
+    function [z_max,omega,U] = hhgmax.harmonic_propagation(t_cmc, xv,...
         yv, zv, dipole_response_config, config, return_omega)
         
 
@@ -126,7 +126,7 @@ Output
 
 .. figure:: harmonic_propagation.png
    :width: 500px
-   :alt: Electric field of harmonic in plane right after gas target as computed with ``harmonic_propagation.m``
+   :alt: Electric field of harmonic in plane right after gas target as computed with ``harmonic_propagation`` module
    :align: center
 
-   Electric field of harmonic in plane right after gas target as computed with ``harmonic_propagation.m``
+   Electric field of harmonic in plane right after gas target as computed with ``harmonic_propagation`` module

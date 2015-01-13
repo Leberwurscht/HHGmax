@@ -1,16 +1,16 @@
 .. _farfield:
 
-farfield.m
-----------
+farfield
+--------
 
 Description
 ~~~~~~~~~~~
 
-Given the complex electric field amplitude in an input plane, the module
-``farfield.m`` calculates the field in a far-away plane using the far
+Given the complex electric field amplitude in an input plane, the ``farfield`` module
+calculates the field in a far-away plane using the far
 field approximation. This is useful to get the electric field of the
 harmonics on a screen plane from the electric field right after the gas
-target as calculated by ``harmonic_propagation.m``.
+target as calculated by :ref:`harmonic_propagation`.
 
 Arguments and Return Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -19,7 +19,7 @@ The signature of the ``farfield`` function is
 
 ::
 
-    function [E_plane] = farfield(xv,yv,z_U,omega, U, config)
+    function [E_plane] = hhgmax.farfield(xv,yv,z_U,omega, U, config)
         
 
 The return value ``E_plane(omega_i,component,yi,xi)`` is an array that
@@ -103,7 +103,7 @@ Example
 ~~~~~~~
 
 The harmonic radiation ``U`` right after the gas target is computed as
-shown in the example of the ``harmonic_propagation.m`` module. Using
+shown in the example of the :ref:`harmonic_propagation` module. Using
 this and the corresponding variables ``z_max``, ``omega``, ``xv`` and
 ``yv``, we can compute the complex electric field of the harmonic
 radiation on a screen that is placed :math:`50\;\centi\meter` behind the
@@ -117,7 +117,7 @@ Output
 
 .. figure:: farfield.png
    :width: 500px
-   :alt: Electric field of harmonic at a :math:`z` plane :math:`50\centi\meter` behind the focus, as computed by ``farfield.m``
+   :alt: Electric field of harmonic at a :math:`z` plane :math:`50\centi\meter` behind the focus, as computed by the ``farfield`` module
    :align: center
 
-   Electric field of harmonic at a :math:`z` plane :math:`50\centi\meter` behind the focus, as computed by ``farfield.m``
+   Electric field of harmonic at a :math:`z` plane :math:`50\centi\meter` behind the focus, as computed by the ``farfield`` module

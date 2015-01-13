@@ -5,7 +5,7 @@ Custom/Pre-Computed Driving Fields
 
 If the built-in modules :ref:`gh_driving_field` and :ref:`plane_wave_driving_field` do not fit your needs, you have several possibilites:
 
-* You can adapt these modules to your needs, e.g. by adding new pulse shapes to the file ``pulse.m`` which is called by these modules.
+* You can adapt these modules to your needs, e.g. by adding new pulse shapes to the file ``hhgmax_pulse.m`` which is called by these modules.
 * Precompute the driving field and provide the data files as input. For this, consider the reference manual for the :ref:`dipole_response` module.
 * Write your own callback module for calculating the driving field.
 

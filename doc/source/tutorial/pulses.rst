@@ -18,7 +18,7 @@ changes to the :ref:`previous example <single-atom-example>`:
 - You must set configuration options that tell the :ref:`pulse` module which pulse
   shape and FWHM to use. Available pulse shapes are ``'gaussian'``, ``'supergaussian'``, ``'cos_sqr'``
   and the default value ``'constant'`` used for cosine driving fields. It is easy to add new pulse shapes
-  by editing the file ``pulse.m``.
+  by editing the file ``hhgmax_pulse.m``.
 - You must extend the time axis so that one whole pulse fits in it. The :ref:`pulse` module produces pulses with the peak at
   :math:`t=0`, so the time axis should be centered around :math:`t = 0`.
 - As the time-domain dipole response is not periodic anymore, the :ref:`dipole_response`

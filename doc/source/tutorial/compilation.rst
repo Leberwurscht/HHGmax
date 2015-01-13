@@ -19,7 +19,7 @@ and run
 .. code-block:: matlab
 
     > mex -setup
-    > mex lewenstein.cpp COMPFLAGS="/openmp $COMPFLAGS"
+    > mex hhgmax_lewenstein.cpp COMPFLAGS="/openmp $COMPFLAGS"
 
 Also, as an alternative to the Microsoft compilers, you can use the open
 source compiler TDM-GCC_ (see http://stackoverflow.com/questions/8552580/using-gccmingw-as-matlabs-mex-compiler#answer-9453099).
@@ -32,7 +32,7 @@ Prompt, change your working directory to the program directory, and run:
 
     > set MATLAB=YOUR_MATLAB_PATH
     > x86_64-w64-mingw32-c++ -m64 -shared -I"%MATLAB%/extern/include" -DMATLAB_MEX_FILE ^
-      -fopenmp -O3 -ansi -o lewenstein.mexw64 -Wl,--export-all-symbols lewenstein.cpp ^
+      -fopenmp -O3 -ansi -o hhgmax_lewenstein.mexw64 -Wl,--export-all-symbols hhgmax_lewenstein.cpp ^
       -L"%MATLAB%/bin/win64" -lmex -lmx -leng -lmat
 
 To compile for 32-bit MATLAB, use these commands:
@@ -41,7 +41,7 @@ To compile for 32-bit MATLAB, use these commands:
 
     > set MATLAB=YOUR_MATLAB_PATH
     > mingw32-c++ -shared -I"%MATLAB%/extern/include" -DMATLAB_MEX_FILE ^
-      -fopenmp -O3 -ansi -o lewenstein.mexw32 -Wl,--export-all-symbols lewenstein.cpp ^
+      -fopenmp -O3 -ansi -o hhgmax_lewenstein.mexw32 -Wl,--export-all-symbols hhgmax_lewenstein.cpp ^
       -L"%MATLAB%/bin/win32" -lmex -lmx -leng -lmat
 
 In some cases, the 32-bit compiler is called ``i686-w64-mingw32-c++`` instead of ``mingw32-c++``.
@@ -75,6 +75,6 @@ your working directory to the main directory of the code and execute:
 
 .. code-block:: bash
 
-    $ CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex lewenstein.cpp
+    $ CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex hhgmax_lewenstein.cpp
 
 .. [#headers-note] Older systems might need ``octave-headers`` instead of ``liboctave-dev``

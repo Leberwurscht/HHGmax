@@ -1,12 +1,12 @@
 .. _gh_mode:
 
-gh_mode.m
----------
+gh_mode
+-------
 
 Description
 ~~~~~~~~~~~
 
-The module ``gh_mode.m`` is used by ``gh_driving_field.m`` for
+The ``gh_mode`` module is used by :ref:`gh_driving_field` for
 calculating superpositions of Gauss-Hermite modes. You can select some
 common modes by name, but also specify the coefficients :math:`A_{nm}`
 for the superposition directly to have more control. The following
@@ -28,7 +28,7 @@ The signature of the ``gh_mode`` function is
 
 ::
 
-    function field = gh_mode(x,y,z,k,config)
+    function field = hhgmax.gh_mode(x,y,z,k,config)
        
 
 The return value is the complex field amplitude of the mode
@@ -102,7 +102,7 @@ Output
 
 .. figure:: gh_mode.png
    :width: 500px
-   :alt: Modes calculated by ``gh_mode.m`` 
+   :alt: Modes calculated by ``gh_mode`` module
    :align: center
 
-   Modes calculated by ``gh_mode.m``. The first row shows a Gaussian beam, the second row the predefined mode ``1d-quasi-imaging``, and the third a custom superposition of Gauss-Hermite modes.
+   Modes calculated by ``gh_mode`` module. The first row shows a Gaussian beam, the second row the predefined mode ``1d-quasi-imaging``, and the third a custom superposition of Gauss-Hermite modes.

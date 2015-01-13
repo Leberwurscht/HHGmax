@@ -1,20 +1,20 @@
 .. _pulse:
 
-pulse.m
--------
+pulse
+-----
 
 Description
 ~~~~~~~~~~~
 
-The module ``pulse.m`` computes the Fourier coefficients of the temporal
-shape of the pulse, as needed by ``gh_driving_field.m``. It can also
+The ``pulse`` module computes the Fourier coefficients of the temporal
+shape of the pulse, as needed by :ref:`gh_driving_field`. It can also
 produce elliptically polarized pulses.
 
 The signature of the ``pulse`` function is
 
 ::
 
-    function [omega, coefficients] = pulse(t, config)
+    function [omega, coefficients] = hhgmax.pulse(t, config)
         
 
 The return values are:
@@ -96,7 +96,7 @@ Output
 
 .. figure:: pulse.png
    :width: 500px
-   :alt: Time evolution and spectrum of a :math:`\cos^2` pulse computed by ``pulse.m``
+   :alt: Time evolution and spectrum of a :math:`\cos^2` pulse computed by the ``pulse`` module
    :align: center
 
-   Time evolution and spectrum of a :math:`\cos^2` pulse computed by ``pulse.m``
+   Time evolution and spectrum of a :math:`\cos^2` pulse computed by the ``pulse`` module

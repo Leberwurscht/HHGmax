@@ -1,7 +1,7 @@
 .. _tong_lin_ionization_rate:
 
-tong_lin_ionization_rate.m
---------------------------
+tong_lin_ionization_rate
+------------------------
 
 Description
 ~~~~~~~~~~~
@@ -17,7 +17,7 @@ The signature of the ``tong_lin_ionization_rate`` function is
 
 ::
 
-    function rate_SI = tong_lin_ionization_rate(E_SI, config)
+    function rate_SI = hhgmax.tong_lin_ionization_rate(E_SI, config)
         
 The return value ``rate_SI`` are the ionization rate in SI units, i.e. :math:`\second^{-1}`, corresponding
 to the static electric field strengths provided as ``E_SI`` argument.

@@ -1,14 +1,14 @@
 .. _dipole_response:
 
-dipole_response.m
------------------
+dipole_response
+---------------
 
 Description
 ~~~~~~~~~~~
 
-The module ``dipole_response.m`` calculates the Fourier-transformed
+The ``dipole_response`` module calculates the Fourier-transformed
 dipole response on a given spatial grid, using the Lewenstein model as
-implemented in ``lewenstein.cpp``. Calculating the dipole responses is
+implemented in the :ref:`lewenstein` module. Calculating the dipole responses is
 what takes most of the time when running the program, therefore an
 intelligent on-disk cache is implemented so that already computed dipole
 responses can be used later without repeating the calculation. This
@@ -28,7 +28,7 @@ The signature of the ``dipole_response`` function is
 
 ::
 
-    function [omega, response_cmc, progress] = dipole_response(t_cmc, xv, yv, zv, config, progress, return_omega)
+    function [omega, response_cmc, progress] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config, progress, return_omega)
         
 
 The return values are:
@@ -77,10 +77,8 @@ The arguments of the ``dipole_response`` function are:
    -  ``config.wavelength`` is the central wavelength of the driving
       field, in :math:`\milli\meter`.
 
-   -  ``config.driving_field`` is the name of a .m file (without the .m
-      extension) that calculates the driving field. This callback
-      function must have the same signature as ``gh_driving_field.m``,
-      which is described in :ref:`gh_driving_field`.
+   -  ``config.driving_field`` is the name of a function (as string) that calculates the driving field. This callback
+      function must have the same signature as :ref:`gh_driving_field`.
 
    -  ``config.ionization_potential`` is the ionization potential of the
       model atom for which the dipole responses should be calculated, in
@@ -163,9 +161,9 @@ The arguments of the ``dipole_response`` function are:
        -  config.components (optional) must be set to the number of electric field vector components
           if you use elliptical polarized driving fields (default: 1)
 
-   -  This module calls ``lewenstein.cpp``. You can override the
+   -  This module calls the :ref:`lewenstein` module. You can override the
       lower-lewel config values ``epsilon_t`` and
-      ``dipole_method`` (see :ref:`lewenstein`).
+      ``dipole_method``.
 
    -  Use can pass a static ionization rate :math:`W(|\vect E|)` to account for ground state
       depletion using the optional ``config.static_ionization_rate`` argument. To do so,
@@ -175,7 +173,7 @@ The arguments of the ``dipole_response`` function are:
 
    -  Instead of passing static ionization rates, you can also specify a callback function which computes
       the time-dependent ionization rate :math:`W(t)` from the driving field :math:`\vect E(t)`. For this,
-      set ``config.ionization_fraction`` to the filename (without the ``.m`` extension) of a Matlab function.
+      set ``config.ionization_fraction`` to the name of the callback function (as string).
       This function must have the signature ``Wt = ionization_fraction(t_cmc,Et,config)``.
 
    -  Additionally, you need to supply all ``config`` fields required by
@@ -256,7 +254,7 @@ Output
 
 .. figure:: dipole_response.png
    :width: 500px
-   :alt: Dipole spectra calculated with the ``dipole_response.m`` module
+   :alt: Dipole spectra calculated with the ``dipole_response`` module
    :align: center
 
-   Dipole spectra calculated with the ``dipole_response.m`` module
+   Dipole spectra calculated with the ``dipole_response`` module

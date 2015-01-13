@@ -19,14 +19,14 @@ option::
    ...
 
    field = 0:5e12:1e15; % V/m
-   rate = tong_lin_ionization_rate(field, struct('atom','Xe')); % in 1/s
+   rate = hhgmax.tong_lin_ionization_rate(field, struct('atom','Xe')); % in 1/s
 
    config.static_ionization_rate = rate;
    config.static_ionization_rate_field = field;
 
    ...
 
-   [omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+   [omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 
 Provide a callback function
 ---------------------------
@@ -40,15 +40,18 @@ To provide a callback function that computes the time-dependent ionization fract
    ...
 
 
-   [omega, response] = dipole_response(t_cmc, xv, yv, zv, config);
+   [omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
 
 Then, create a function called ``my_callback_file.m`` which looks like this::
 
    function ionization_fraction = my_callback_file(t_SAU, Et_SAU, config)
 
+   % load HHGmax to be able to access sau_convert
+   hhgmax = hhgmax_load();
+
    % convert from scaled atomic units
-   t_fs = sau_convert(t_cmc, 't', 'SI', config) / 1e-15;
-   Et_SI = sau_convert(Et_SAU, 'E', 'SI', config);
+   t_fs = hhgmax.sau_convert(t_cmc, 't', 'SI', config) / 1e-15;
+   Et_SI = hhgmax.sau_convert(Et_SAU, 'E', 'SI', config);
 
    % compute time-dependent ionization fraction eta(t) given E(t)
    % ...

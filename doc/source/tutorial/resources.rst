@@ -32,9 +32,9 @@ Often, the dipole responses consume a great amount of RAM which can lead to seri
 
    return_omega = [13 19];
 
-   [omega, response_cmc] = dipole_response(t_cmc, xv, yv, zv, config, [], return_omega);
+   [omega, response_cmc] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config, [], return_omega);
    % or:
-   [z_max,omega,U] = harmonic_propagation(t_cmc, xv, yv, zv, dipole_response_config, config, return_omega);
+   [z_max,omega,U] = hhgmax.harmonic_propagation(t_cmc, xv, yv, zv, dipole_response_config, config, return_omega);
 
 .. note::
    When using the on-disk cache, a transpose operation has to be performed to reduce inperformant non-linear access to hard drives later. The amount of RAM used for this defaults to 1GB, but you can configure it using the config.cache.transpose_RAM option (value in GB). Smaller values slow down the operation.

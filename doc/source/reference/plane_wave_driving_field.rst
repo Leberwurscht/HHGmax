@@ -1,17 +1,17 @@
 .. _plane_wave_driving_field:
 
-plane_wave_driving_field.m
---------------------------
+plane_wave_driving_field
+------------------------
 
 Description
 ~~~~~~~~~~~
 
-The module ``plane_wave_driving_field.m`` calculates the time-dependent driving
+The module ``plane_wave_driving_field`` calculates the time-dependent driving
 field :math:`\vect E(\vect r, t_\text{cmc})` at a given position, in
 co-moving coordinates, assuming a plane wave propagating in positive z
 direction.
 It can be used as a callback function for the
-``config.driving_field`` argument of the ``dipole_response.m`` module.
+``config.driving_field`` argument of the :ref:`dipole_response` module.
 
 Arguments and Return Values
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -20,7 +20,7 @@ The signature of the ``plane_wave_driving_field`` function is
 
 ::
 
-    function [Et_cmc] = plane_wave_driving_field(x, y, z, config)
+    function [Et_cmc] = hhgmax.plane_wave_driving_field(x, y, z, config)
        
 
 The return value is the time-dependent complex electric field as a row
@@ -48,7 +48,7 @@ arguments are:
       corresponding angular frequency axis in scaled atomic units. The
       angular frequency axis must include both negative and positive
       frequencies. These two arguments can be produced easily with the
-      ``pulse.m`` module.
+      :ref:`pulse` module.
 
 Example
 ~~~~~~~
@@ -66,7 +66,7 @@ Output
 
 .. figure:: plane_wave_driving_field.png
    :width: 500px
-   :alt: Driving field computed by the module plane_wave_driving_field.m
+   :alt: Driving field computed by the :ref:`plane_wave_driving_field` module 
    :align: center
 
-   Driving field computed by the module plane_wave_driving_field.m
+   Driving field computed by the :ref:`plane_wave_driving_field` module

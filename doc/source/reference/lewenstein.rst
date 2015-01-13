@@ -1,13 +1,13 @@
 .. _lewenstein:
 
-lewenstein.cpp
---------------
+lewenstein
+----------
 
 Description
 ~~~~~~~~~~~
 
 Unlike the other modules, the Lewenstein model is implemented in C++
-(``lewenstein.hpp``). The file ``lewenstein.cpp`` provides the Matlab
+(``lewenstein.hpp``). The file ``hhgmax_lewenstein.cpp`` provides the Matlab
 (or Octave) interface to this C++ code and must be compiled to a
 ``.mex`` file in order to be usable from within Matlab/Octave (see :ref:`compilation`).
 It computes the time-dependent single-atom
@@ -25,7 +25,7 @@ The signature of the ``farfield`` function is
 
 ::
 
-    dt = lewenstein(t, Et, config);
+    dt = hhgmax.lewenstein(t, Et, config);
         
 
 The return value ``dt(C,t_i)`` is an array that contains the
