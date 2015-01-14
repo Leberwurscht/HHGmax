@@ -1,0 +1,11 @@
+Version 0.0.2
+=============
+
+Changes from 0.0.1:
+ - automatically place needed DLL files in main folder if using Windows
+ - use namespace for all framework routines
+ - fix bug that prevented compiling with newer versions of Matlab
+ - fix bug in handling ground state depletion
+ - add module to compute static ionization rates
+ - fixes to examples
+ - documentation improvements
