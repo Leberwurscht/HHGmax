@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# MHHG documentation build configuration file, created by
+# HHGmax documentation build configuration file, created by
 # sphinx-quickstart on Mon Nov  4 19:44:04 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -42,8 +42,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'MHHG'
-copyright = u'2013, Maximilian Högner'
+project = u'HHGmax'
+copyright = u'2013-2015, Maximilian Högner, LMU München'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -168,7 +168,7 @@ html_show_copyright = False
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'MHHGdoc'
+htmlhelp_basename = 'HHGmaxdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -187,7 +187,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'MHHG.tex', u'MHHG Documentation',
+  ('index', 'HHGmax.tex', u'HHGmax Documentation',
    u'Maximilian Högner', 'manual'),
 ]
 
@@ -217,7 +217,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'mhhg', u'MHHG Documentation',
+    ('index', 'hhgmax', u'HHGmax Documentation',
      [u'Maximilian Högner'], 1)
 ]
 
@@ -231,8 +231,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'MHHG', u'MHHG Documentation',
-   u'Maximilian Högner', 'MHHG', 'One line description of project.',
+  ('index', 'HHGmax', u'HHGmax Documentation',
+   u'Maximilian Högner', 'HHGmax', 'One line description of project.',
    'Miscellaneous'),
 ]
 
