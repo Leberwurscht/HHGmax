@@ -14,19 +14,11 @@ Static ionization rates
 
 The :ref:`dipole_response` module can also compute the time-dependent ionization by itself under the quasi-static approximation if you provide the static ionization rates, which
 can be obtained e.g. from the included module :ref:`tong_lin_ionization_rate`. For this, use the ``static_ionization_rate`` option on the ``config`` struct of the :ref:`dipole_response` call, together with an intensity axis provided by the ``static_ionization_rate_field``
-option::
+option:
 
-   ...
-
-   field = 0:5e12:1e15; % V/m
-   rate = hhgmax.tong_lin_ionization_rate(field, struct('atom','Xe')); % in 1/s
-
-   config.static_ionization_rate = rate;
-   config.static_ionization_rate_field = field;
-
-   ...
-
-   [omega, response] = hhgmax.dipole_response(t_cmc, xv, yv, zv, config);
+.. literalinclude:: ../../../examples/tutorial/ground_state_depletion/static_rates.m
+   :language: matlab
+   :lines: 41-48
 
 Provide a callback function
 ---------------------------
