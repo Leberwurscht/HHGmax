@@ -157,7 +157,7 @@ inline Type operator*(const vec<dim,Type> &v, const vec<dim,Type> &w) {
   return r;
 };
 
-// these more special templates gain some speed for scalar product of complex vec and real vec
+// these more specialized templates gain some speed for scalar product of complex vec and real vec
 template <int dim, typename Type>
 inline std::complex<Type> operator*(const vec<dim,std::complex<Type> > &v, const vec<dim,Type> &w) {
   std::complex<Type> r(0);
