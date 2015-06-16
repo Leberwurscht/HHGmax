@@ -212,7 +212,7 @@ vec<dim,std::complex<Type> > conj(const vec<dim,std::complex<Type> > &v) {
 // implement absolute value of a vec
 template <int dim, typename Type>
 Type abs(const vec<dim,Type> &v) {
-  Type r, a;
+  Type r(0), a;
 
   for (int i=0; i<dim; i++) {
     a = abs(v.x[i]);
