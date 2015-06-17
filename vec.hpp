@@ -157,7 +157,7 @@ inline Type operator*(const vec<dim,Type> &v, const vec<dim,Type> &w) {
   return r;
 };
 
-// these more special templates gain some speed for scalar product of complex vec and real vec
+// these more specialized templates gain some speed for scalar product of complex vec and real vec
 template <int dim, typename Type>
 inline std::complex<Type> operator*(const vec<dim,std::complex<Type> > &v, const vec<dim,Type> &w) {
   std::complex<Type> r(0);
@@ -212,7 +212,7 @@ vec<dim,std::complex<Type> > conj(const vec<dim,std::complex<Type> > &v) {
 // implement absolute value of a vec
 template <int dim, typename Type>
 Type abs(const vec<dim,Type> &v) {
-  Type r, a;
+  Type r(0), a;
 
   for (int i=0; i<dim; i++) {
     a = abs(v.x[i]);

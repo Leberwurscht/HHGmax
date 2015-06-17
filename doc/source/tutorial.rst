@@ -14,4 +14,5 @@ Tutorial
    tutorial/resources
    tutorial/custom_df
    tutorial/ground_state_depletion
+   tutorial/python
    tutorial/compilation
