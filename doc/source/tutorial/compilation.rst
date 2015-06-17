@@ -78,3 +78,36 @@ your working directory to the main directory of the code and execute:
     $ CPPFLAGS="-fopenmp -O3 -ansi" LDFLAGS="$CPPFLAGS" mkoctfile -lgomp --mex hhgmax_lewenstein.cpp
 
 .. [#headers-note] Older systems might need ``octave-headers`` instead of ``liboctave-dev``
+
+
+.. _compilation_python:
+
+Compilation of the Python module
+--------------------------------
+
+HHGmax comes with an optional :ref:`Python module <python>` which depends on a DLL (Windows) or shared object (Linux) file. Precompiled DLLs
+are provided; if you use Linux you have to compile the shared object file yourself.
+
+For this, make sure you have a compiler (on Debian/Ubuntu install the ``build-essential`` package), then change your working
+directory to the main directory of the code and execute:
+
+.. code-block:: bash
+
+  $ g++ -shared -o lewenstein.so lewenstein.cpp -fPIC -fopenmp -O3 -ansi
+
+If you make changes to the C++ code and need to recompile the DLL files on Windows, you can use the TDM-GCC_ compiler (see http://stackoverflow.com/questions/8552580/using-gccmingw-as-matlabs-mex-compiler#answer-9453099).
+At installation, you *have* to select ``Components > gcc > openmp`` which is needed for multi-processor support. Alternatively, you can cross-compile from Linux using MingGW (on Debian/Ubuntu install the ``mingw-w64`` package).
+
+To compile the 64-bit DLL file, open MinGW Command Prompt (Windows) or the terminal (Linux cross-compile), change your working directory to the program directory, and run:
+
+.. code-block:: bat
+
+  x86_64-w64-mingw32-c++ -m64 -shared -o dll64/lewenstein.dll lewenstein.cpp -fopenmp -O3 -ansi
+
+For the 32-bit DLL file, use
+
+.. code-block:: bat
+
+  mingw32-c++ -shared -o dll32/lewenstein.dll lewenstein.cpp -fopenmp -O3 -ansi
+
+In some cases, the 32-bit compiler is called ``i686-w64-mingw32-c++`` instead of ``mingw32-c++``.

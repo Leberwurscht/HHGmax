@@ -22,6 +22,9 @@ list of contained files, minus some lower level modules::
     lewenstein.hpp
     vec.hpp
 
+    lewenstein.cpp
+    pylewenstein.py
+
     examples/
     doc/
 
