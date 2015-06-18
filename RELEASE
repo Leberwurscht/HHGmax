@@ -1,3 +1,13 @@
+Version 0.0.3
+=============
+
+Changes from 0.0.2:
+ - fix bug with ground state depletion from static ionization rates
+ - add working example for computation with ground state depletion
+ - fix a bug in vec.hpp that can potentially affect computation with
+   interpolated dipole matrix elements
+ - add an optional Python module for computing single atom dipole responses
+
 Version 0.0.2
 =============
 
@@ -9,3 +19,6 @@ Changes from 0.0.1:
  - add module to compute static ionization rates
  - fixes to examples
  - documentation improvements
+
+Known bugs in this version:
+ - computation with static ionization rates is faulty
