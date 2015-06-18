@@ -173,6 +173,7 @@ def lewenstein(t,Et,ip,wavelength=None,weights=None,at=None,dipole_elements=None
   if dipole_elements is None: dipole_elements = dipole_elements_H(dims, ip=ip)
 
   # call C function
+  assert dipole_elements.dims==dims
   lewenstein_so.lewenstein_double(dims, N, t.ctypes.data, Et.ctypes.data, weights_length, weights.ctypes.data, at.ctypes.data, ip, epsilon_t, dipole_elements.pointer, output.ctypes.data)
 
   # unit conversion
