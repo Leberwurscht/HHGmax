@@ -30,7 +30,7 @@ by
 
 .. literalinclude:: ../../../examples/tutorial/gh_modes/dipole_spectrum.m
    :language: matlab
-   :lines: 19-21
+   :lines: 20-22
 
 To learn how to get access to the spatially dependent field amplitude of the driving field and plot it, consider the reference of the :ref:`gh_mode` module.
 

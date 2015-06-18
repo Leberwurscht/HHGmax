@@ -43,7 +43,7 @@ Output
 ------
 
 .. figure:: pulses.png
-   :width: 400px
+   :width: 500px
    :alt: Dipole spectrum of single atom with pulsed driving field
    :align: center
 

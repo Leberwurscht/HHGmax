@@ -487,7 +487,7 @@ for zi=1:length(zv)
         % but do not integrate until infinity.
         % Note: (4) of Cao et al. (2006) is wrong, it should be |a(t)|^2 so here
         %       we use sqrt
-        lewenstein_config.ground_state_amplitude = sqrt(-exp(-cumtrapz(t_cmc,w)));
+        lewenstein_config.ground_state_amplitude = sqrt(exp(-cumtrapz(t_cmc,w)));
       end
 
       % compute dipole response

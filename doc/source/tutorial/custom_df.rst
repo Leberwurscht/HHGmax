@@ -27,7 +27,7 @@ To use this callback, you only need to adapt a few lines from the example of the
 
 .. literalinclude:: ../../../examples/tutorial/custom_driving_field/sech_dipole_spectrum.m
    :language: matlab
-   :emphasize-lines: 18,20-22
+   :emphasize-lines: 19,21-23
 
 Output
 ------
