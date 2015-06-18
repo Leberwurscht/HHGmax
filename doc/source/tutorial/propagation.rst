@@ -29,7 +29,7 @@ This example uses periodic mode as opposed to the example from the chapter :ref:
 
 .. literalinclude:: ../../../examples/tutorial/propagation/efield.m
    :language: matlab
-   :emphasize-lines: 37-
+   :emphasize-lines: 38-
 
 Output
 ------

@@ -115,7 +115,7 @@ By using the rotational symmetry option, the memory requirements are reduced fur
 
 .. literalinclude:: ../../../examples/tutorial/resources/efield.m
    :language: matlab
-   :emphasize-lines: 40, 43-44, 47, 70, 73, 97
+   :emphasize-lines: 41, 44-45, 48, 71, 74, 98
 
 .. rubric:: Now, you know...
 

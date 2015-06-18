@@ -28,7 +28,7 @@ Now you can compute and plot the dipole responses at different positions near th
 
 .. literalinclude:: ../../../examples/tutorial/gaussian_beams/dipole_spectrum.m
    :language: matlab
-   :lines: 39-
+   :lines: 40-
 
 Output
 ------
