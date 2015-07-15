@@ -95,7 +95,7 @@ directory to the main directory of the code and execute:
 
   $ g++ -shared -o lewenstein.so lewenstein.cpp -fPIC -fopenmp -O3 -ansi
 
-If you make changes to the C++ code and need to recompile the DLL files on Windows, you can use the TDM-GCC_ compiler (see http://stackoverflow.com/questions/8552580/using-gccmingw-as-matlabs-mex-compiler#answer-9453099).
+If you make changes to the C++ code and need to recompile the DLL files on Windows, you can use the TDM-GCC_ compiler.
 At installation, you *have* to select ``Components > gcc > openmp`` which is needed for multi-processor support. Alternatively, you can cross-compile from Linux using MingGW (on Debian/Ubuntu install the ``mingw-w64`` package).
 
 To compile the 64-bit DLL file, open MinGW Command Prompt (Windows) or the terminal (Linux cross-compile), change your working directory to the program directory, and run:
