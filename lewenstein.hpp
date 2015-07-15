@@ -90,7 +90,6 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
   typedef vec<dim,Type> rvec;
   typedef vec<dim,cType> cvec;
   typedef vec_array<dim,Type> rvec_array;
-  typedef vec_array<dim,cType> cvec_array;
 
   int t_i, tau_i;
   Type pi = 4.0*atan(1.0);
@@ -166,6 +165,106 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
     }
 
     output[t_i] = 2.0 * imag(integral);
+  }
+
+  output[0] = 0;
+
+  delete[] At_data;
+  delete[] Bt_data;
+  delete[] Ct;
+
+  return 0; // might be replaced by error code later, e.g. for failed interpolation
+};
+
+// calculates dipole response in saddle point approximation applied to tau:
+//   Yakovlev, Ivanov, and Krausz, "Enhanced Phase-Matching for Generation of Soft X-Ray Harmonics and Attosecond Pulses in Atomic Gases."
+template <int dim, typename Type>
+int yakovlev(const int N, Type *t, Type *Et_data, int max_tau_i, Type *at, Type Ip, int trajectories, int skip, Type *output_data) {
+  typedef complex<Type> cType;
+  typedef vec<dim,Type> rvec;
+  typedef vec<dim,cType> cvec;
+  typedef vec_array<dim,Type> rvec_array;
+
+  int t_i, tau_i;
+  Type pi = 4.0*atan(1.0);
+  cType i = cType(Type(0), Type(1));
+  cType isqrtneg = cType(Type(1/sqrt(2)), -Type(1/sqrt(2)));
+
+  // initialize Et, At, Bt, Ct, output
+  rvec_array Et(Et_data);
+  Type *At_data = new Type[dim*N]; rvec_array At(At_data);
+  Type *Bt_data = new Type[dim*N]; rvec_array Bt(Bt_data);
+  Type *Ct = new Type[N];
+  rvec_array output(output_data);
+
+  rvec IAt(0);
+  rvec IBt(0);
+  Type ICt = Type(0);
+
+  At[0] = IAt;
+  Bt[0] = IBt;
+  Ct[0] = ICt;
+
+  for (t_i=1; t_i<N; t_i++) {
+    Type dt = t[t_i]-t[t_i-1];
+
+    IAt -= (Et[t_i-1]+Et[t_i]) * (dt/2);
+    At[t_i] = IAt;
+
+    IBt += (At[t_i-1]+At[t_i]) * (dt/2);
+    Bt[t_i] = IBt;
+
+    ICt += (SQR(At[t_i-1]) + SQR(At[t_i])) * dt/2;
+    Ct[t_i] = ICt;
+  }
+
+  Type Sst, dt, a_ion;
+  cType a_pr;
+  int trajectories_found,inde;
+  rvec reference_B;
+  rvec reference_sign;
+  rvec line_at_t, delta_At;
+  cvec a_rec;
+
+  #pragma omp parallel for private(tau_i, inde, Sst, dt, reference_B, reference_sign, line_at_t, trajectories_found, a_rec,a_ion,a_pr,delta_At) shared(t, Et, At, Bt, Ct, i, pi, isqrtneg, at, Ip, max_tau_i, trajectories, output)
+  for (t_i=1; t_i<N; t_i++) {
+    output[t_i] = 0;
+
+    reference_B = Bt[t_i];
+    reference_sign = Et[t_i];
+    trajectories_found = 0;
+
+    inde = max_tau_i;
+    if (t_i<inde) inde = t_i+1;
+    for (tau_i=1; tau_i<inde; tau_i++) {
+      // check if we found an intersection of the line A(t-tau)*(t-tau)+B(t-tau) with B(t); if not keep searching
+      line_at_t = At[t_i-tau_i]*t[tau_i] + Bt[t_i-tau_i];
+      if ((line_at_t-reference_B)*reference_sign>0) {
+        continue;
+      }
+
+      trajectories_found++;
+
+      if (trajectories_found>skip) {
+        // compute auxiliary terms
+        dt = t[t_i-tau_i+1] - t[t_i-tau_i];
+        Sst = Ip * t[tau_i] - .5/t[tau_i]*SQR(Bt[t_i]-Bt[t_i-tau_i]) + .5*(Ct[t_i]-Ct[t_i-tau_i]);
+        delta_At = At[t_i-tau_i] - At[t_i];
+
+        // compute probability amplitudes
+        a_ion = sqrt( ( SQR(at[t_i-tau_i]) - SQR(at[t_i-tau_i+1]) )/dt );
+        a_pr = pow(2*pi,1.5) / t[tau_i] / sqrt(t[tau_i]) * sqrt(sqrt(2*Ip))/abs(Et[t_i-tau_i]) * cType( cos(Sst), -sin(Sst) );
+        a_rec = sqrt(1-SQR(at[t_i])) / pow(2*Ip + SQR(delta_At), 3) * delta_At;
+
+        // add to dipole response
+        output[t_i] += real(isqrtneg * a_ion * a_pr * a_rec);
+      }
+
+      // break if all trajectories found, set new reference sign
+      if (trajectories_found==trajectories) break;
+
+      reference_sign = line_at_t-reference_B;
+    }
   }
 
   output[0] = 0;
