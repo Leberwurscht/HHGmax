@@ -102,9 +102,9 @@ extern "C" {
   }
 
   // expose implementation of Lewenstein in saddle-point approximation
-  void yakovlev_double(int dims, int N, double *t, double *Et, int max_tau_i, double *at, double ip, int trajectories, int skip, double *output) {
+  void yakovlev_double(int dims, int N, double *t, double *Et, int max_tau_i, double *at, double *tb_window, double ip, int trajectories, int skip, double *output) {
     if (dims==1) {
-      yakovlev<1,double>(N, t, Et, max_tau_i, at, ip, trajectories, skip, output);
+      yakovlev<1,double>(N, t, Et, max_tau_i, at, tb_window, ip, trajectories, skip, output);
     }
   }
 }

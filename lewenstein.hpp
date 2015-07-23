@@ -179,7 +179,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
 // calculates dipole response in saddle point approximation applied to tau:
 //   Yakovlev, Ivanov, and Krausz, "Enhanced Phase-Matching for Generation of Soft X-Ray Harmonics and Attosecond Pulses in Atomic Gases."
 template <int dim, typename Type>
-int yakovlev(const int N, Type *t, Type *Et_data, int max_tau_i, Type *at, Type Ip, int trajectories, int skip, Type *output_data) {
+int yakovlev(const int N, Type *t, Type *Et_data, int max_tau_i, Type *at, Type *tb_window, Type Ip, int trajectories, int skip, Type *output_data) {
   typedef complex<Type> cType;
   typedef vec<dim,Type> rvec;
   typedef vec<dim,cType> cvec;
@@ -257,7 +257,7 @@ int yakovlev(const int N, Type *t, Type *Et_data, int max_tau_i, Type *at, Type 
         a_rec = sqrt(1-SQR(at[t_i])) / pow(2*Ip + SQR(delta_At), 3) * delta_At;
 
         // add to dipole response
-        output[t_i] += real(isqrtneg * a_ion * a_pr * a_rec);
+        output[t_i] += real(isqrtneg * tb_window[t_i-tau_i] * a_ion * a_pr * a_rec);
       }
 
       // break if all trajectories found, set new reference sign

@@ -183,15 +183,18 @@ def lewenstein(t,Et,ip,wavelength=None,weights=None,at=None,dipole_elements=None
   return output
 
 # wrap yakovlev function
-lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
 lewenstein_so.yakovlev_double.restype = None
 
-def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_periods=2):
+def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_periods=2,tb_window=None):
   # unit conversion
   if wavelength is not None:
     t = sau_convert(t, 't', 'SAU', wavelength)
     Et = sau_convert(Et, 'E', 'SAU', wavelength)
     ip = sau_convert(ip, 'U', 'SAU', wavelength)
+
+  # default value for tb window
+  if tb_window is None: tb_window = np.ones_like(t)
 
   # allocate memory for output
   output = np.empty_like(Et)
@@ -206,6 +209,7 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
   t = np.require(t, np.double, ['C', 'A'])
   Et = np.require(Et, np.double, ['C', 'A'])
   at = np.require(at, np.double, ['C', 'A'])
+  tb_window = np.require(tb_window, np.double, ['C', 'A'])
   output = np.require(output, np.double, ['C', 'A', 'W'])
 
   # get dimensions
@@ -215,12 +219,13 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
 
   # check dimensions
   assert at.size==N
+  assert tb_window.size==N
   assert Et.shape[0]==N
   assert dims==1
   assert Et.size==N*dims
 
   # call C function
-  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, max_tau_i, at.ctypes.data, ip, int(trajectories), int(skip_trajectories), output.ctypes.data)
+  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, max_tau_i, at.ctypes.data, tb_window.ctypes.data, ip, int(trajectories), int(skip_trajectories), output.ctypes.data)
 
   # unit conversion
   if wavelength is not None:
