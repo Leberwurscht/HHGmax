@@ -193,9 +193,6 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
     Et = sau_convert(Et, 'E', 'SAU', wavelength)
     ip = sau_convert(ip, 'U', 'SAU', wavelength)
 
-  # default value for ground state amplitude
-  if at is None: at = np.ones_like(t)
-
   # allocate memory for output
   output = np.empty_like(Et)
 
@@ -219,12 +216,11 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
   # check dimensions
   assert at.size==N
   assert Et.shape[0]==N
-  assert dims in [1,2,3]
+  assert dims==1
   assert Et.size==N*dims
 
   # call C function
   lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, max_tau_i, at.ctypes.data, ip, int(trajectories), int(skip_trajectories), output.ctypes.data)
-  print output
 
   # unit conversion
   if wavelength is not None:
