@@ -254,7 +254,8 @@ int yakovlev(const int N, Type *t, Type *Et_data, int max_tau_i, Type *at, Type 
         // compute probability amplitudes
         a_ion = sqrt( ( SQR(at[t_i-tau_i]) - SQR(at[t_i-tau_i+1]) )/dt );
         a_pr = pow(2*pi,1.5) / t[tau_i] / sqrt(t[tau_i]) * sqrt(sqrt(2*Ip))/abs(Et[t_i-tau_i]) * cType( cos(Sst), -sin(Sst) );
-        a_rec = sqrt(1-SQR(at[t_i])) / pow(2*Ip + SQR(delta_At), 3) * delta_At;
+//        a_rec = sqrt(1-SQR(at[t_i])) / pow(2*Ip + SQR(delta_At), 3) * delta_At; // as in reference, but probably wrong
+        a_rec = at[t_i] / pow(2*Ip + SQR(delta_At), 3) * delta_At;
 
         // add to dipole response
         output[t_i] += real(isqrtneg * tb_window[t_i-tau_i] * a_ion * a_pr * a_rec);
