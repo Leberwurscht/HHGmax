@@ -233,6 +233,19 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
 
   return output
 
+def cutoff(amplitude,ip,wavelength):
+  """ expects SI units """
+
+  # unit conversion
+  amplitude = sau_convert(amplitude, 'E', 'SAU', wavelength)
+  ip = sau_convert(ip, 'U', 'SAU', wavelength)
+  omega = 2*np.pi/sau_convert(wavelength/c, 't', 'SAU', wavelength)
+
+  up = amplitude**2/4/omega**2
+  harmonic_order = ip + 3.17*up
+
+  return harmonic_order
+
 if __name__=="__main__":
   import pylab
 
