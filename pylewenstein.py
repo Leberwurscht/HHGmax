@@ -67,8 +67,6 @@ lewenstein_so.dipole_elements_symmetric_interpolate_double_destroy.argtypes = [c
 lewenstein_so.dipole_elements_symmetric_interpolate_double_destroy.restype = None
 
 class dipole_elements_symmetric_interpolate(dipole_elements):
-  # TODO: untested!
-
   _dr = None
   _di = None
 
@@ -275,6 +273,14 @@ if __name__=="__main__":
 
   d = lewenstein(t,Et,ip,wavelength)
 
+  Dp = np.arange(0,10,1e-4)
+  alpha = 2*sau_convert(ip,'U','SAU',wavelength)
+  Dd = 1j*(2**(7/2)*alpha**(5/4)/np.pi) * Dp / (Dp**2+alpha)**3
+  dint = dipole_elements_symmetric_interpolate(1, Dp, Dd)
+  d2 = lewenstein(t,Et,ip,wavelength,dipole_elements=dint)
+
   pylab.semilogy(np.fft.fftfreq(len(t), t[1]-t[0])/(1/T), abs(np.fft.fft(d))**2)
+  pylab.semilogy(np.fft.fftfreq(len(t), t[1]-t[0])/(1/T), abs(np.fft.fft(d2))**2, label='interpolated d')
+  pylab.legend()
   pylab.xlim((0,100))
   pylab.show()
