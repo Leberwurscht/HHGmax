@@ -151,7 +151,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
       Sst = Ip * t[tau_i] - .5/t[tau_i]*SQR(Bt[t_i]-Bt[t_i-tau_i]) + .5*(Ct[t_i]-Ct[t_i-tau_i]);
       if (tau_i==0) Sst = 0;
 
-      c = pi/(epsilon_t+0.5*i*t[tau_i]);
+      c = pi/(epsilon_t+(Type)0.5*i*t[tau_i]);
 
       // note: c*sqrt(c) is a lot faster than pow(c, 1.5) - yields 50% speed improvement
       integrand13 = dstar;
@@ -164,7 +164,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
       last_integrand = integrand13;
     }
 
-    output[t_i] = 2.0 * imag(integral);
+    output[t_i] = (Type)2.0 * imag(integral);
   }
 
   output[0] = 0;
