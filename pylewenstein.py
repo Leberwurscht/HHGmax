@@ -22,13 +22,10 @@ elif os.name=="nt":
   bits = ctypes.sizeof(ctypes.c_voidp)*8
   archdirectory = os.path.join(rootdir,'dll' + str(bits))
 
-  rootdirdll = os.path.join(rootdir,'lewenstein.dll')
-  correctdll = os.path.join(archdirectory,'lewenstein.dll')
-  if not os.path.exists(rootdirdll) or os.path.getsize(rootdirdll)!=os.path.getsize(correctdll):
-    for filename in os.listdir(archdirectory): # for dependencies
-      shutil.copy(os.path.join(archdirectory,filename), rootdir)
-
-  lewenstein_so = ctypes.CDLL(os.path.join(rootdir,'lewenstein'))
+  cwd = os.getcwd()
+  os.chdir(archdirectory) # necessary to load dependencies correctly
+  lewenstein_so = ctypes.CDLL('lewenstein.dll')
+  os.chdir(cwd)
 
 # Note: explicitly setting lewenstein_so.*.argtypes/restype is necessary to prevent segfault on 64 bit:
 # http://stackoverflow.com/questions/17240621/wrapping-simple-c-example-with-ctypes-segmentation-fault
