@@ -241,6 +241,19 @@ def cutoff(amplitude,ip,wavelength):
 
   return harmonic_order
 
+def cutoff_amplitude(harmonic_order,ip,wavelength):
+  """ expects SI units """
+
+  # unit conversion
+  ip = sau_convert(ip, 'U', 'SAU', wavelength)
+  omega = 2*np.pi/sau_convert(wavelength/c, 't', 'SAU', wavelength)
+
+  up = (harmonic_order - ip)/3.17
+  amplitude = np.sqrt(4*omega**2*up)
+  amplitude = sau_convert(amplitude, 'E', 'SI', wavelength)
+
+  return amplitude
+
 if __name__=="__main__":
   import pylab
 
