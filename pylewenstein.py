@@ -89,15 +89,32 @@ class dipole_elements_symmetric_interpolate(dipole_elements):
   def __del__(self):
      lewenstein_so.dipole_elements_symmetric_interpolate_double_destroy(self.dims, self.pointer)
 
-# helper function to generate weights
+# helper functions to generate weights
+def piecewise_cossqr(t, ts, ys):
+  ts, ys = np.array(ts), np.array(ys)
+  y = np.zeros_like(t, ys.dtype)
+
+  for tstart, tend, ystart, yend in zip(ts[:-1], ts[1:], ys[:-1], ys[1:]):
+    piece = (tstart<=t) & (t<=tend)
+    tscaled = t[piece]/(tend-tstart) - tstart/(tend-tstart)
+    y[piece] = (ystart-yend) * np.cos(tscaled*np.pi/2)**2 + yend
+
+  return y
+
+def weights_short_trajectory(tau,T=2*np.pi,periods_soft=0.01):
+  tau = tau - tau[0]
+  tau_truncated = tau[tau/T<=0.65]
+  return piecewise_cossqr(tau_truncated/T, [0, 0.65-periods_soft, 0.65], [1., 1., 0.])
+
+def weights_long_trajectory(tau,T=2*np.pi,periods_soft=0.01):
+  tau = tau - tau[0]
+  tau_truncated = tau[tau/T<=1]
+  return piecewise_cossqr(tau_truncated/T, [0, 0.65, 0.65+periods_soft, 1-periods_soft, 1], [0., 0., 1., 1., 0.])
+
 def get_weights(tau,T=2*np.pi,periods_one=1,periods_soft=.5):
-  interval_points = sum(tau-tau[0]<=periods_one*T)
-  window_points = sum(tau-tau[0]<=periods_soft*T)
-
-  r = np.ones(interval_points+window_points)
-  r[-window_points:] = np.cos(np.pi/2 * np.arange(window_points)/window_points)**2
-
-  return r
+  tau = tau - tau[0]
+  tau_truncated = tau[tau/T<=periods_one+periods_soft]
+  return piecewise_cossqr(tau_truncated/T, [0, periods_one, periods_one+periods_soft], [1., 1., 0.])
 
 # helper function for unit conversion
 def sau_convert(value, quantity, target, wavelength):
@@ -178,18 +195,21 @@ def lewenstein(t,Et,ip,wavelength=None,weights=None,at=None,dipole_elements=None
   return output
 
 # wrap yakovlev function
-lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double, ctypes.c_int, ctypes.c_int, ctypes.c_void_p]
+lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p]
 lewenstein_so.yakovlev_double.restype = None
 
-def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_periods=2,tb_window=None):
+def yakovlev(t,Et,ip,at,wavelength=None,weights=None):
+  # default value for weights
+  if weights is None and wavelength is None:
+    weights = get_weights(t)
+  elif weights is None and wavelength is not None:
+    weights = get_weights(t, wavelength/c)
+
   # unit conversion
   if wavelength is not None:
     t = sau_convert(t, 't', 'SAU', wavelength)
     Et = sau_convert(Et, 'E', 'SAU', wavelength)
     ip = sau_convert(ip, 'U', 'SAU', wavelength)
-
-  # default value for tb window
-  if tb_window is None: tb_window = np.ones_like(t)
 
   # allocate memory for output
   output = np.empty_like(Et)
@@ -197,30 +217,27 @@ def yakovlev(t,Et,ip,at,wavelength=None,trajectories=2,skip_trajectories=0,max_p
   # make sure t axis starts at zero
   t = t - t[0]
 
-  # replace infinite max_periods by sensible value
-  if max_periods is None or not np.isfinite(max_periods): max_periods = np.max(t)/2/np.pi + 1
-
   # make sure we have appropriate memory layout before passing to C code
   t = np.require(t, np.double, ['C', 'A'])
   Et = np.require(Et, np.double, ['C', 'A'])
+  weights = np.require(weights, np.double, ['C', 'A'])
   at = np.require(at, np.double, ['C', 'A'])
-  tb_window = np.require(tb_window, np.double, ['C', 'A'])
   output = np.require(output, np.double, ['C', 'A', 'W'])
 
   # get dimensions
   N = t.size
   dims = Et.shape[1] if len(Et.shape)>1 else 1
-  max_tau_i = np.where(t<2*np.pi*max_periods)[0][-1]
+  min_tau_i = 0
+  weights_length = weights.size
 
   # check dimensions
   assert at.size==N
-  assert tb_window.size==N
   assert Et.shape[0]==N
   assert dims==1
   assert Et.size==N*dims
 
   # call C function
-  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, max_tau_i, at.ctypes.data, tb_window.ctypes.data, ip, int(trajectories), int(skip_trajectories), output.ctypes.data)
+  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, weights_length, weights.ctypes.data, min_tau_i, at.ctypes.data, ip, output.ctypes.data)
 
   # unit conversion
   if wavelength is not None:
