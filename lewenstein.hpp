@@ -179,7 +179,7 @@ int lewenstein(const int N, Type *t, Type *Et_data, int weight_length, Type *wei
 // calculates dipole response in saddle point approximation applied to tau:
 //   Yakovlev, Ivanov, and Krausz, "Enhanced Phase-Matching for Generation of Soft X-Ray Harmonics and Attosecond Pulses in Atomic Gases."
 template <int dim, typename Type>
-int yakovlev(const int N, Type *t, Type *Et_data, int weight_length, Type *weights, int min_tau_i, Type *at, Type Ip, Type *output_data) {
+int yakovlev(const int N, Type *t, Type *Et_data, int weight_length, Type *weights, int min_tau_i, Type *dtfraction, Type *at, Type Ip, Type *output_data) {
   typedef complex<Type> cType;
   typedef vec<dim,Type> rvec;
   typedef vec<dim,cType> cvec;
@@ -226,7 +226,7 @@ int yakovlev(const int N, Type *t, Type *Et_data, int weight_length, Type *weigh
   rvec line_at_t, delta_At;
   cvec a_rec;
 
-  #pragma omp parallel for private(tau_i, inde, Sst, dt, reference_B, reference_sign, line_at_t, a_rec,a_ion,a_pr,delta_At) shared(t, Et, At, Bt, Ct, i, pi, isqrtneg, at, Ip, weights, weight_length, min_tau_i, output)
+  #pragma omp parallel for private(tau_i, inde, Sst, dt, reference_B, reference_sign, line_at_t, a_rec,a_ion,a_pr,delta_At) shared(t, Et, At, Bt, Ct, i, pi, isqrtneg, dtfraction, at, Ip, weights, weight_length, min_tau_i, output)
   for (t_i=1; t_i<N; t_i++) {
     output[t_i] = 0;
 
@@ -248,7 +248,7 @@ int yakovlev(const int N, Type *t, Type *Et_data, int weight_length, Type *weigh
       delta_At = At[t_i-tau_i] - At[t_i];
 
       // compute probability amplitudes
-      a_ion = sqrt( ( SQR(at[t_i-tau_i]) - SQR(at[t_i-tau_i+1]) )/dt );
+      a_ion = sqrt( dtfraction[t_i-tau_i] );
       a_pr = pow(2*pi,1.5) / t[tau_i] / sqrt(t[tau_i]) * sqrt(sqrt(2*Ip))/abs(Et[t_i-tau_i]) * cType( cos(Sst), -sin(Sst) );
 //      a_rec = sqrt(1-SQR(at[t_i])) / pow(2*Ip + SQR(delta_At), 3) * delta_At; // as in reference, but probably wrong
       a_rec = at[t_i] / pow(2*Ip + SQR(delta_At), 3) * delta_At;

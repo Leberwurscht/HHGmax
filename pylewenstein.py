@@ -195,10 +195,10 @@ def lewenstein(t,Et,ip,wavelength=None,weights=None,at=None,dipole_elements=None
   return output
 
 # wrap yakovlev function
-lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p]
+lewenstein_so.yakovlev_double.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p, ctypes.c_void_p, ctypes.c_double, ctypes.c_void_p]
 lewenstein_so.yakovlev_double.restype = None
 
-def yakovlev(t,Et,ip,at,wavelength=None,weights=None):
+def yakovlev(t,Et,ip,at,wavelength=None,weights=None,dtfraction=None):
   # default value for weights
   if weights is None and wavelength is None:
     weights = get_weights(t)
@@ -217,10 +217,19 @@ def yakovlev(t,Et,ip,at,wavelength=None,weights=None):
   # make sure t axis starts at zero
   t = t - t[0]
 
+  # compute dtfraction if not given
+  if dtfraction is None:
+    dt = t[1]
+    atsqr = at**2
+    dtfraction = np.empty_like(at)
+    dtfraction[0] = 0
+    dtfraction[1:] = -np.diff(at**2)/dt
+
   # make sure we have appropriate memory layout before passing to C code
   t = np.require(t, np.double, ['C', 'A'])
   Et = np.require(Et, np.double, ['C', 'A'])
   weights = np.require(weights, np.double, ['C', 'A'])
+  dtfraction = np.require(dtfraction, np.double, ['C', 'A'])
   at = np.require(at, np.double, ['C', 'A'])
   output = np.require(output, np.double, ['C', 'A', 'W'])
 
@@ -232,12 +241,13 @@ def yakovlev(t,Et,ip,at,wavelength=None,weights=None):
 
   # check dimensions
   assert at.size==N
+  assert dtfraction.size==N
   assert Et.shape[0]==N
   assert dims==1
   assert Et.size==N*dims
 
   # call C function
-  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, weights_length, weights.ctypes.data, min_tau_i, at.ctypes.data, ip, output.ctypes.data)
+  lewenstein_so.yakovlev_double(dims, N, t.ctypes.data, Et.ctypes.data, weights_length, weights.ctypes.data, min_tau_i, dtfraction.ctypes.data, at.ctypes.data, ip, output.ctypes.data)
 
   # unit conversion
   if wavelength is not None:
