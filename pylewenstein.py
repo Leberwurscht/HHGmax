@@ -295,7 +295,7 @@ if __name__=="__main__":
   d = lewenstein(t,Et,ip,None,weights)
   reference_d = [0.00000, 0.00000, -2.18318, -2.95464, -1.23753] # computed by Matlab/octave module
   assert np.allclose(d, reference_d, atol=1e-4)
-  print "Test passed"
+  print("Test passed")
 
   # plot dipole response for pulse (using SI units)
   wavelength = 1000e-9
